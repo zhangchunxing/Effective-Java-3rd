@@ -149,3 +149,28 @@ NutritionFacts cocaCola = new NutritionFacts.Builder(240, 8)
 该客户端代码易于编写，更重要的是易于阅读。构建器模式模拟了在**Python**和**Scala**中找到的命名可选参数。
 
 为简便起见，省略了有效性检查。要检查构建器的构造函数和方法中的参数有效性，为了尽快检查出无效参数。检查**build**方法调用的构造函数中涉及多个参数的不变量。要确保这些不变量没被篡改，请在复制构造器参数(第50项)之后对对象字段进行检查。如果检查失败，会抛出一个**IllegalArgumentException**(第72项)，它的详细消息会指示出哪些参数无效(第75项)。
+
+构建器模式非常适合类的层次结构。使用构建器的并行层次结构，每个构建器嵌套在相应的类中。抽象类有抽象的构建器;具体类有具体的构建器。例如，将一个抽象类当做代表了不同种类披萨的层次结构的根类:
+
+```java
+// Builder pattern for class hierarchies
+public abstract class Pizza {
+    public enum Topping { HAM, MUSHROOM, ONION, PEPPER, SAUSAGE }
+    final Set<Topping> toppings;
+    abstract static class Builder<T extends Builder<T>> {
+        EnumSet<Topping> toppings = EnumSet.noneOf(Topping.class);
+        public T addTopping(Topping topping) {
+        toppings.add(Objects.requireNonNull(topping));
+        return self();
+    }
+    abstract Pizza build();
+    // Subclasses must override this method to return "this"
+    protected abstract T self();
+    }
+    Pizza(Builder<?> builder) {
+        toppings = builder.toppings.clone(); // See Item 50
+    }
+}
+```
+
+请注意,**Pizza.Builder**是具有递归类型参数的泛型类型(条目30)。它与抽象的self方法一起使用，允许方法链的形式在子类中正常工作，而不需要强制类型转换。在面对Java缺少自我类型这一事实下，像这种仿造自我类型的工作方法是常用的。
