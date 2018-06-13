@@ -157,16 +157,20 @@ NutritionFacts cocaCola = new NutritionFacts.Builder(240, 8)
 public abstract class Pizza {
     public enum Topping { HAM, MUSHROOM, ONION, PEPPER, SAUSAGE }
     final Set<Topping> toppings;
+    
     abstract static class Builder<T extends Builder<T>> {
         EnumSet<Topping> toppings = EnumSet.noneOf(Topping.class);
+        
         public T addTopping(Topping topping) {
-        toppings.add(Objects.requireNonNull(topping));
-        return self();
+        	toppings.add(Objects.requireNonNull(topping));
+        	return self();
+    	}
+        
+    	abstract Pizza build();
+    	// Subclasses must override this method to return "this"
+    	protected abstract T self();
     }
-    abstract Pizza build();
-    // Subclasses must override this method to return "this"
-    protected abstract T self();
-    }
+    
     Pizza(Builder<?> builder) {
         toppings = builder.toppings.clone(); // See Item 50
     }
@@ -174,3 +178,58 @@ public abstract class Pizza {
 ```
 
 请注意,**Pizza.Builder**是具有递归类型参数的泛型类型(条目30)。它与抽象的self方法一起使用，允许方法链的形式在子类中正常工作，而不需要强制类型转换。在面对Java缺少自我类型这一事实下，像这种仿造自我类型的工作方法是常用的。
+
+这里有两个具体的披萨子类，一个是标准的纽约风格披萨，另一个是奶酪馅饼式披萨。前者需要一个尺寸大小参数，而后者可以让你指定酱汁是在里面还是在外面。
+
+```java
+public class NyPizza extends Pizza {
+	public enum Size { SMALL, MEDIUM, LARGE }
+	private final Size size;
+    
+	public static class Builder extends Pizza.Builder<Builder> {
+		private final Size size;
+		public Builder(Size size) {
+            this.size = Objects.requireNonNull(size);
+		}
+        
+	    @Override 
+        public NyPizza build() {
+            return new NyPizza(this);
+        }
+        
+	    @Override 
+        protected Builder self() { return this; }
+	}
+    
+    private NyPizza(Builder builder) {
+        super(builder);
+        size = builder.size;
+    }
+}
+
+public class Calzone extends Pizza {
+    private final boolean sauceInside;
+    
+    public static class Builder extends Pizza.Builder<Builder> {
+        private boolean sauceInside = false; // Default
+        public Builder sauceInside() {
+            sauceInside = true;
+            return this;
+        }
+        
+        @Override
+        public Calzone build() {
+        	return new Calzone(this);
+        }
+        
+        @Override
+        protected Builder self() { return this; }
+    }
+    
+    private Calzone(Builder builder) {
+        super(builder);
+        sauceInside = builder.sauceInside;
+    }
+}
+```
+
