@@ -191,6 +191,7 @@ public class NyPizza extends Pizza {
 
     public static class Builder extends Pizza.Builder<Builder> {
         private final Size size;
+        
         public Builder(Size size) {
             this.size = Objects.requireNonNull(size);
         }
@@ -215,6 +216,7 @@ public class Calzone extends Pizza {
 
     public static class Builder extends Pizza.Builder<Builder> {
         private boolean sauceInside = false; // Default
+        
         public Builder sauceInside() {
             sauceInside = true;
             return this;
@@ -237,4 +239,11 @@ public class Calzone extends Pizza {
 ```
 
 注意每个子类的builder的build\(\)方法都被声明成返回一个具类： NyPizza.Builder的build方法返回NyPizza类，而Calzone.Builder的build方法返回Calzone类，这种子类方法返回父类中声明的返回类型的子类型的技术，称为返回类型的协变。它允许客户端使用这些构建器，而不需要强制转换。
+
+这些“层次化的构建器“的客户端代码本质上等价于简单的NutritionFacts的构建器的代码。如下面展示的客户端例子代码，假如要在枚举常量集合上发生静态导入也是很简洁的。
+
+```java
+NyPizza pizza = new NyPizza.Builder(SMALL).addTopping(SAUSAGE).addTopping(ONION).build();
+Calzone calzone = new Calzone.Builder().addTopping(HAM).sauceInside().build();
+```
 
