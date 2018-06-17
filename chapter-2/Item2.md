@@ -247,3 +247,6 @@ NyPizza pizza = new NyPizza.Builder(SMALL).addTopping(SAUSAGE).addTopping(ONION)
 Calzone calzone = new Calzone.Builder().addTopping(HAM).sauceInside().build();
 ```
 
+与构造函数相比，构建器的第二个优点是，构建器可以有多个可变的参数，因为每个参数都在自己的方法中指定。
+
+或者，构建器可以把多次调用所需要的参数聚合到某一个方法里的一个单一字段上，正如前面 addTopping方法所展示的那样。
