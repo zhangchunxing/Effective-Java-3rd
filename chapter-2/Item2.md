@@ -237,7 +237,7 @@ public class Calzone extends Pizza {
 }
 ```
 
-注意每个子类的builder的build\(\)方法都被声明成返回一个具类： NyPizza.Builder的build方法返回NyPizza类，而Calzone.Builder的build方法返回Calzone类，这种子类方法返回父类中声明的返回类型的子类型的技术，称为返回类型的协变。它允许客户端使用这些构建器，而不需要强制转换。
+注意每个子类的builder的build\(\)方法都被声明成返回一个具类： NyPizza.Builder的build方法返回NyPizza类，而Calzone.Builder的build方法返回Calzone类，这种子类方法返回父类中声明的返回类型的子类型的技术，称为协变返回类型 。它允许客户端使用这些构建器，而不需要强制转换。
 
 这些“层次化的构建器“的客户端代码本质上等价于简单的NutritionFacts的构建器的代码。如下的示例客户端代码假设已经静态导入了枚举常量。
 
@@ -246,7 +246,7 @@ NyPizza pizza = new NyPizza.Builder(SMALL).addTopping(SAUSAGE).addTopping(ONION)
 Calzone calzone = new Calzone.Builder().addTopping(HAM).sauceInside().build();
 ```
 
-与构造函数相比，构建器的第二个优点是，构建器可以有多个可变的参数，因为每个参数都在自己的方法中指定。或者，构建器可以把多次调用所需要的参数聚合到一个方法里的一个单一字段上，正如前面 addTopping方法所展示的那样。
+与构造函数相比，构建器的一个小小的优势是，构建器可以有多个可变的参数，因为每个参数都在自己的方法中指定。或者，构建器可以把多次调用所需要的参数聚合到一个方法里的一个单一字段上，正如前面 addTopping方法所展示的那样。
 
 构建器模式非常灵活。一个构建器可以重复使用建立多个对象。构建器的参数可以在调用构建方法时进行调整，以改变创建的对象。构建器可以在对象创建时自动填充一些字段，比如说每次创建一个对象时递增的序列号等。
 
