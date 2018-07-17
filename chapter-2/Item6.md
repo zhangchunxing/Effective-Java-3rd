@@ -31,3 +31,19 @@ static boolean isRomanNumeral(String s) {
 ```
 
 这个实现的问题在于它依赖于String.matches方法。虽然 String.matches是检查一个字符串是否匹配这个正则表达式最简单的方法，但是在性能要求苛刻的场景下，他并不适合重复使用。这样做的问题是，它会在内部为正则表达式创建一个Pattern实例，并且仅仅使用它一次，之后它就可以进行垃圾收集了。创建一个Pattern实例非常昂贵，因为它需要将正则表达式编译成一个有限状态机。
+
+为了提高性能，显式地将正则表达式编译为一个Pattern实例(它是不可变的)，作为类初始化的一部分，缓存它，并在每次调用isRomanNumeral方法时重用同一个实例:
+
+```java
+// Reusing expensive object for improved performance
+public class RomanNumerals {
+    private static final Pattern ROMAN = Pattern.compile("^(?=.)M*(C[MD]|D?C{0,3})"
+    		+ "(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$");
+    
+    static boolean isRomanNumeral(String s) {
+   	 	return ROMAN.matcher(s).matches();
+    }
+}
+```
+
+如果经常调用这个方法，那么改进版的isRomanNumeral方法提供了显著的性能收益。在我的机器上，当输入长度为8的字符串时，第一版的方法执行了1.1微秒，而改进版的方法执行了0.17微秒，比原来快了6.5倍。不仅性能得到了改善，而且可以认为代码也变得更清晰了。使用一个静态final字段来表示原本不可见的Pattern的实例，这样允许我们给这个字段取个名字，这样做比正则表达式本身可读性高多了。
