@@ -23,3 +23,51 @@ c++程序员被告诫不要将Java的终结方法或清除方法当作是跟c++�
 那么，你应该做些什么呢，来代替给对象封装了需要关闭的资源(如文件或线程)的类编写终结方法和清除方法？只要让你的类实现`AutoCloseable`，并要求它的客户端在不再需要它时，在每个实例上调用close方法，通常使用`try -with-resources`来确保即使在遇到异常时也要终止(第9项)。值得一提的一个细节是实例必须跟踪它是否已被关闭：`close`法必须在对象不再有效的字段中记录，如果它们在该对象已经被关闭后被调用，那么他方法必须检查此字段并抛出`IllegalStateException` 。
 
 那么，如果终结方法和清除方法真的有用途，那么他们的好处是什么呢？他们可能有2个合理的用途。一个是作为网络安全使用，以防资源的拥有者忘记调用它的`close`方法。然后这里并不保证清除方法的或终结方法会立即运行(或者根本不会) ，如果客户端没有这样做，那么延迟资源的释放，比什么也不做要好。
+
+清除方法第二个合理的用法是将普通对象和本地的同等对象（native peers）关联起来。普通对象通过本地方法（native method）委托给本地对象，就是本地同等对象。因为本地同等对象不是普通对象，所以垃圾收集器无法识别它，并且当它对应的Java对象被回收时，它自己也不会被回收。如果它的性能是可接受的并且本地同等对象没有持有关键资源，那么对上述的任务来说，清除方法或终结方法可能是一个不错的媒介。如果性能不可接受或者本地同等对象拥有必须立即回收的资源，那么如前所述，该类应具有`close`方法。
+
+清除方法使用起来有点棘手。下面是一个简单的Room类，说明了清除方法的作用。我们假设房间必须在回收之前进行清洁。Room类实现`AutoCloseable`接口，它使用清洁器自动清理安全网络的事实仅仅是一个细节实现。与终结方法不同，清除方法不会污染类的公共API：
+
+```java
+// An autocloseable class using a cleaner as a safety net
+public class Room implements AutoCloseable {
+    
+	private static final Cleaner cleaner = Cleaner.create();
+    
+    // Resource that requires cleaning. Must not refer to Room!
+    private static class State implements Runnable {
+        int numJunkPiles; // Number of junk piles in this room
+        
+        State(int numJunkPiles) {
+            this.numJunkPiles = numJunkPiles;
+        }
+        
+        // Invoked by close method or cleaner
+        @Override public void run() {
+            System.out.println("Cleaning room");
+            numJunkPiles = 0;
+        }
+	}
+    
+    // The state of this room, shared with our cleanable
+    private final State state;
+    
+    // Our cleanable. Cleans the room when it’s eligible for gc
+    private final Cleaner.Cleanable cleanable;
+    
+    public Room(int numJunkPiles) {
+        state = new State(numJunkPiles);
+        cleanable = cleaner.register(this, state);
+    }
+    
+    @Override 
+    public void close() {
+        cleanable.clean();
+    }
+}
+```
+
+
+
+
+
