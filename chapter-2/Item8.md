@@ -43,7 +43,8 @@ public class Room implements AutoCloseable {
         }
         
         // Invoked by close method or cleaner
-        @Override public void run() {
+        @Override 
+        public void run() {
             System.out.println("Cleaning room");
             numJunkPiles = 0;
         }
@@ -67,7 +68,4 @@ public class Room implements AutoCloseable {
 }
 ```
 
-
-
-
-
+静态内部类State持有清洁器清洁房间所需的资源。在这个例子中，资源就是字段`numJunkPiles`，表示房间中的混乱程度。更现实的是，它可能是一个包含指向本地同等对象的指针的终态的长整型。
