@@ -69,3 +69,29 @@ public class Room implements AutoCloseable {
 ```
 
 静态内部类`State`持有清洁器清洁房间所需的资源。在这个例子中，资源就是字段`numJunkPiles`，表示房间中的混乱程度。更现实的是，它可能是一个包含指向本地同等对象的指针的终态的长整型。State实现了`Runnable`，它的`run`方法最多被调用一次，当我们在`Room`构造函数中使用我们的清理器注册`State`实例时，然后我们得到了`Cleanable`。对`run`方法的调用将由以下两种方法之一触发：通常是通过调用`Room`的`close`方法调用`Cleanable`的`clean`方法来触发它。如果客户端无法在`Room`实例符合垃圾收集条件时调用`close`方法，则清理器将（希望）调用`State`的`run`方法。
+
+`state`实例不持有对它的`Room`实例的引用，这一点很重要。如果它持有引用，那么它会创造一个死循环，阻止`Room`实例被垃圾收集器回收（以及自动清理）。因此，`State`必须是一个静态内部类，因为非静态内部类包含对其外部类实例的引用(项目24)。同样不建议使用`lambda`，因为它们可以很容易地捕获对外部类对象的引用。 
+
+就像我们之前说的，`Room`的清洁剂只是用作安全网。如果客户端用`try -with-resource`块来包围所有`Room`实例，则永远不需要自动清理。这位表现良好的客户展示了这种行为：
+
+```java
+public class Adult {
+    public static void main(String[] args) {
+        try (Room myRoom = new Room(7)) {
+        	System.out.println("Goodbye");
+        }
+    }
+}
+```
+
+如你所期盼的，运行`Adult`程序会打印`Goodbye`，接着就是清理`Room`。但是，行为粗鲁的程序是什么样子的呢？它从不清洁他的房间？
+
+```java
+public class Teenager {
+    public static void main(String[] args) {
+    	new Room(99);
+    	System.out.println("Peace out");
+    }
+}
+```
+
