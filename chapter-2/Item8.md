@@ -68,4 +68,4 @@ public class Room implements AutoCloseable {
 }
 ```
 
-静态内部类State持有清洁器清洁房间所需的资源。在这个例子中，资源就是字段`numJunkPiles`，表示房间中的混乱程度。更现实的是，它可能是一个包含指向本地同等对象的指针的终态的长整型。
+静态内部类`State`持有清洁器清洁房间所需的资源。在这个例子中，资源就是字段`numJunkPiles`，表示房间中的混乱程度。更现实的是，它可能是一个包含指向本地同等对象的指针的终态的长整型。State实现了`Runnable`，它的`run`方法最多被调用一次，当我们在`Room`构造函数中使用我们的清理器注册`State`实例时，然后我们得到了`Cleanable`。对`run`方法的调用将由以下两种方法之一触发：通常是通过调用`Room`的`close`方法调用`Cleanable`的`clean`方法来触发它。如果客户端无法在`Room`实例符合垃圾收集条件时调用`close`方法，则清理器将（希望）调用`State`的`run`方法。
