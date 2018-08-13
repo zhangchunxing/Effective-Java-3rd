@@ -11,4 +11,5 @@
   * [优先使用依赖注入而非硬编码资源的关联关系](chapter-2/Item5.md)
   * [避免创建不必要的对象](chapter-2/Item6.md)
   * [消除废弃的对象引用](chapter-2/Item7.md)
+  * [避免使用终结器与清理器](chapter-2/Item8.md)
 
