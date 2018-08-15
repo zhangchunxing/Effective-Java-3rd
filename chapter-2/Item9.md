@@ -72,3 +72,4 @@ static void copy(String src, String dst) throws IOException {
 }
 ```
 
+与以前的版本相比，`try-with-resources`版本不仅更短，可读性更好，而且提供了更好的诊断。仔细想想`firstLineOfFile`方法。如果`firstLineOfFile`和`close`方法（不可见）都抛出了异常，则后一个异常将被抑制，来支持前一个异常。 实际上，可能会抑制多个异常，而保留你实际希望看到的异常。这些被抑制的异常不仅仅会被丢弃；它们会被打印到堆栈信息里，并用一个标记来说明它们是被抑制的。在程序中你可以用`getSuppressed`方法来访问它们，该方法是在Java 7中被添加到`Throwable`中的。
