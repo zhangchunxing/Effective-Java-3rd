@@ -33,3 +33,29 @@ class Point {
 然而，如果一个类是包私有的或者只一个私有的内部类，那么暴露他的数据字段本来就没有什么错——假设它们能够很好地描述类提供的抽象。无论是在类定义中还是在使用它的客户端代码中，这种方式都比提供访问方法的方式要看起来更简洁点。虽然客户端代码与类的内部表现绑定在一起，但这段代码仅限于包含该类的包下。如果想要对表示形式进行更改，您可以在不接触包外部任何代码的情况下进行更改。对于私有内部类，更改的范围进一步限制在封闭类中。
 
 Java平台库中的几个类违反了公共类不应该直接暴露字段的建议。这其中包括了`java.awt`包下的`Point`和`Dimension`类。这些类不应被效仿，而应被视为警告。正如在第67条中所述，暴露`Dimension`类内部，这一决定导致了严重的性能问题，至今仍然存在。
+
+虽然公共类直接露出字段从来都不是一个好主意，但是如果字段是不可变的，那么就不会造成什么危害。你无法在不改变其API的情况下，改变类的表现形式，而且当读取一个字段时，你无法做一些辅助性的动作，但是你可以强制使用不变量。例如，这个类保证每个实例代表一个有效的时间：
+
+```java
+// Public class with exposed immutable fields - questionable
+public final class Time {
+    
+	private static final int HOURS_PER_DAY = 24;
+	private static final int MINUTES_PER_HOUR = 60;
+	public final int hour;
+	public final int minute;
+    
+	public Time(int hour, int minute) {
+		if (hour < 0 || hour >= HOURS_PER_DAY)
+			throw new IllegalArgumentException("Hour: " + hour);
+		if (minute < 0 || minute >= MINUTES_PER_HOUR)
+			throw new IllegalArgumentException("Min: " + minute);
+		this.hour = hour;
+		this.minute = minute;
+	}
+	... // Remainder omitted
+        
+}
+```
+
+总之，公共类不应该暴露出它的可变字段。公共类暴露不可变字段，这样做没什么危害，但仍然是有问题的。然而，对于包私有或私有嵌套类来说，有时候需要露出字段，无论是可变的还是不可变的。
