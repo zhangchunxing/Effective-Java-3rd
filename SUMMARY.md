@@ -13,3 +13,7 @@
   * [消除废弃的对象引用](chapter-2/Item7.md)
   * [避免使用终结器与清理器](chapter-2/Item8.md)
 
+- [对所有对象通用的方法](chapter-4/README.md)
+  - [在公有类中，请使用访问器方法而非公有字段](chapter-4/Item16.md)
+  - [减少可变性](chapter-4/Item17.md)
+
