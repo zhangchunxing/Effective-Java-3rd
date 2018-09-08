@@ -109,3 +109,27 @@ moby.flip(0);
 
 如果你执行一个多步操作，而这种个操作中每一步都会产生一个新的对象。最后所有的对象都会被丢弃，除了那个最终的结果。那么性能的问题就会被放大出来。这里有两种方法来解决这个问题。第一个方法是猜测通常需要哪些多步操作，并把它们当做原生类型提供。如果将多步操作作为原生类型提供，则不可变类不必在每个步骤中创建单独的对象。在内部，不可变类可以任意灵活。例如，`BigInteger`有一个包私有的可变“同伴类”，它使用这个类来加速多步操作，比如模块化求幂。由于前面列出的所有原因，使用可变同伴类要比使用`BigInteger`难得多。幸运的是，你不必使用它：`BigInteger`的实现者为你做了艰苦的工作。
 
+如果你能够准确地预测客户端希望在不可变类上执行哪些复杂操作，那么包私有可变的伙伴类方法就可以很好地工作。如果不是，那么你最好的选择就是提供一个公共可变的伙伴类。这种方法在Java平台库中的主要示例是`String`类，它的可变的伙伴是`StringBuilder(`及其过时的前身`StringBuffer`)。
+
+既然你已经知道了如何创建不可变类，并且了解了不可变性的优缺点，那么让我们来讨论一些设计方案。回想一下，为了保证不变性，类不允许自己被子类化。这可以通过`final`类来完成，但是还有另外一个更灵活的选择。除了让不可变类成为`final`，你还可以将其所有构造函数都变为私有的或包私有的，并且添加公共静态工厂来替公共的构造方法（条款）。为了使它具体化，如果你使用了这个方法，那么`Complex`类就如下所示：
+
+```java
+// Immutable class with static factories instead of constructors
+public class Complex {
+    
+	private final double re;
+    
+	private final double im;
+    
+	private Complex(double re, double im) {
+		this.re = re;
+		this.im = im;
+	}
+    
+	public static Complex valueOf(double re, double im) {
+		return new Complex(re, im);
+	}
+... // Remainder unchanged
+}
+```
+
