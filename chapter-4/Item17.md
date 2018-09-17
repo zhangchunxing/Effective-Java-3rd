@@ -133,3 +133,14 @@ public class Complex {
 }
 ```
 
+通常来讲，这个方法是最好的选择。它最灵活，因为它允许多个包私有的实现类的使用。对于属于包之外的客户端来说，不可变类是有效的终态，因为包外的类是不可能继承一个没有公共或者受保护的构造方法的类的。除了支持多实现类的灵活性之外，这种方法还可以通过改进静态工厂的对象缓存功能，然后在后续版本中调优该类的性能。
+
+当编写`BigInteger`和`BigDecimal`时，不可变类一定是有效的final，所以它们的所有方法都可能被重写，这一点没有得到广泛的理解。遗憾的是，在保留向后兼容性的情况下，这一问题无法在事后得到纠正。如果你编写的类的安全性依赖于来自不受信任的客户端的`BigInteger`或`BigDecimal`参数的不可变性，那么你必须检查该参数是否是『真正的』`BigInteger`或`BigDecimal`实例，而不是一个不受信任的子类的实例。如果是后者，那么在假设它可能是可变的情况下(条款50)，你必须对它进行防御性拷贝：
+
+```java
+public static BigInteger safeInstance(BigInteger val) {
+    return val.getClass() == BigInteger.class ? val :
+    			new BigInteger(val.toByteArray());
+}
+```
+
