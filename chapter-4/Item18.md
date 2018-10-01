@@ -37,3 +37,12 @@ public class InstrumentedHashSet<E> extends HashSet<E> {
 }
 ```
 
+这个类看起来合理，但是它没有作用。假设我们创建了一个实例，并使用`addAll`方法添加三个元素。顺便，我们使用静态工厂方法`List.of`（Java9新加的方法）来创建一个列表。如果你使用的是更早的版本。可以使用`Arrays.asList`代替：
+
+```java
+InstrumentedHashSet<String> s = new InstrumentedHashSet<>();
+s.addAll(List.of("Snap", "Crackle", "Pop"));
+```
+
+我们希望`getAddCount`方法此时返回3，但它返回的是6。哪里出错了呢？在`HashSet`内部，`addAll`方法是在其`add`方法之上实现的，尽管`HashSet`完全有理由不去记录这个的实现细节。`InstrumentedHashSet`的`addAll`方法给`addCount`加3，然后使用` super.addAll`去调用`HashSet`的`addAll`实现。这个方法反过来调用`add`方法(在`InstrumentedHashSet`中被重写过)，每个元素都会调用一次。这三次调用每一次都往`addCount`上加1，所以总共增加了6个元素：使用`addAll`方法添加的每个元素都会被重复计数。
+
