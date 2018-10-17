@@ -126,3 +126,10 @@ public class ForwardingSet<E> implements Set<E> {
 }
 ```
 
+`InstrumentedSet`类的设计是通过`Set`接口来实现的，这个接口可以捕获`HashSet`类的功能。除了健壮外，这个设计还非常灵活。`InstrumentedSet`类实现了`Set`接口，仅有一个构造函数，它的参数也是`Set`类型的。本质上，这个类把一个`Set`转成另一个`Set`，并添加了额外的功能。基于继承的方法只适用于单个具体类，并且需要为超类中每个受支持的构造函数提供单独的构造函数，与此不同的是，包装器类可用于仪器任何集合实现，并将与任何现有构造函数一起工作：
+
+```java
+Set<Instant> times = new InstrumentedSet<>(new TreeSet<>(cmp));
+Set<E> s = new InstrumentedSet<>(new HashSet<>(INIT_CAPACITY));
+```
+
