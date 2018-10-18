@@ -133,3 +133,13 @@ Set<Instant> times = new InstrumentedSet<>(new TreeSet<>(cmp));
 Set<E> s = new InstrumentedSet<>(new HashSet<>(INIT_CAPACITY));
 ```
 
+`InstrumentedSet`类甚至可以用于临时检测已经在没有检测的情况下使用的集合实例：
+
+```java
+static void walk(Set<Dog> dogs) {
+    InstrumentedSet<Dog> iDogs = new InstrumentedSet<>(dogs);
+    ... // Within this method use iDogs instead of dogs
+}
+```
+
+`InstrumentedSet`类称为包装类，因为每个`InstrumentedSet`实例都包含（“包装”）另一个`Set`实例。这也称为『装饰器模式』[Gamma95]，因为`InstrumentedSet`类通过添加仪表盘来“装饰”`Set`集合。有时，组合和转发的结合被宽泛地称为『委托』。严格来说，只有包装器对象可以将自身传递给包装对象，才是委托[Lieber-man86; Gamma95]。
