@@ -36,3 +36,33 @@ public interface SingerSongwriter extends Singer, Songwriter {
 你用默认方法提供实现的帮助的数量是有限制的。尽管许多接口都指定了`Object`方法（如`equals`和`hashCode`）的行为，但是不允许为它们提供默认方法。而且，不允许接口包含实例字段或非公共静态成员（私有静态方法除外）。最后，你不能往不受你控制的接口里加默认方法。
 
 但是，你可以通过提供一个抽象骨架实现类来结合接口和抽象类的优点。接口定义一个类型，可能提供了一些默认方法，然而骨架实现类基于原生接口方法之上去实现剩下的非原生接口方法。扩展骨架实现需要完成实现接口的大部分工作。这是模板方法模式[Gamma95]。
+
+按照惯例，骨架实现类被称为抽象接口，其中接口是它们实现的接口的名称。比如说，集合框架提供了一个骨架实现处理每一个主要的集合接口：`AbstractCollection `, `AbstractSet` ,  `AbstractList` ,和` AbstractMap` 。可以说，将它们称为`SkeletalCollection`、`SkeletalSet`、`SkeletalList`和`SkeletalMap`是有意义的，但抽象的约定现在已经牢固确立了。如果设计得当，框架实现(无论是单独的抽象类，还是仅仅由接口上的默认方法组成)可以使程序员非常容易地提供他们自己的接口实现。例如，这里有一个静态工厂方法，它在`AbstractList`上包含一个完整的、功能强大的列表实现：
+
+```java
+// Concrete implementation built atop skeletal implementation
+static List<Integer> intArrayAsList(int[] a) {
+    Objects.requireNonNull(a);
+    // The diamond operator is only legal here in Java 9 and later
+    // If you're using an earlier release, specify <Integer>
+    return new AbstractList<>() {
+        @Override
+        public Integer get(int i) {
+        	return a[i]; // Autoboxing (Item 6)
+        }
+        
+        @Override
+        public Integer set(int i, Integer val) {
+            int oldVal = a[i];
+            a[i] = val; // Auto-unboxing
+            return oldVal; // Autoboxing
+        }
+        
+        @Override
+        public int size() {
+        	return a.length;
+        }
+    };
+}
+```
+
