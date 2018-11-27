@@ -71,3 +71,39 @@ static List<Integer> intArrayAsList(int[] a) {
 骨架实现类的美妙之处在于，它们提供了抽象类的所有实现帮助，而不像抽象类作为类型定义时那样受到严格的约束。对于拥有骨架实现类的接口的大多数实现者来说，继承这个类是显而易见的选择，不过这一点并非强制。如果一个类无法继承骨架实现，那么它永远都可以直接实现接口。这个类依然可以从接口本身的默认方法获益。此外，骨架实现还可以辅助实现者完成任务。实现接口的类可以将对接口方法的调用转发到其所包含的继承了骨架实现的私有内部类。这种技术叫做模拟的多继承，它与条款18所介绍的包装类用法紧密相关。它提供了多继承的很多好处，同时又避免了不少陷阱。
 
 编写骨架实现是个相对来说比较轻松，但是有点单调的事情。首先，研究接口，确定哪些方法是主要方法，其他方法可以根据这些方法来实现。这些主要方法将会成为骨架实现中的抽象方法。接下来，在接口中为所有可以直接根据这些主要方法实现的方法提供默认方法，不过请记住，你不能为`equals`与`hashCode`等Object方法提供默认方法。如果主要方法与默认方法涵盖了整个接口，那就完成了任务，无需骨架实现类了。否则，请编写一个实现该接口的类，这个类要实现其余所有的接口方法。该类可以包含适合于所处理的任务的任何非公有的字段与方法。
+
+举个简单的例子，想想`Map.Entry`接口。最明显的主要方法是`getKey`、`getValue`和(可选的)`setValue`。该接口指定了`equals`和`hashCode`的行为，并且有一个明显的主要的`toString`实现。因为不允许你给`Object`方法提供默认实现，所以所有方法实现应该放在骨架实现类里：
+
+```java
+// Skeletal implementation class
+public abstract class AbstractMapEntry<K,V> implements Map.Entry<K,V> {
+	// Entries in a modifiable map must override this method
+	@Override
+    public V setValue(V value) {
+		throw new UnsupportedOperationException();
+	}
+    
+    // Implements the general contract of Map.Entry.equals
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Map.Entry))
+            return false;
+        Map.Entry<?,?> e = (Map.Entry) o;
+        return Objects.equals(e.getKey(), getKey()) 
+            && Objects.equals(e.getValue(), getValue());
+    }
+    // Implements the general contract of Map.Entry.hashCode
+    @Override
+    public int hashCode() {
+    	return Objects.hashCode(getKey()) ^ Objects.hashCode(getValue());
+    }
+    
+    @Override
+    public String toString() {
+    	return getKey() + "=" + getValue();
+    }
+}
+```
+
