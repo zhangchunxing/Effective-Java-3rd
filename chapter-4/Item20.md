@@ -107,3 +107,6 @@ public abstract class AbstractMapEntry<K,V> implements Map.Entry<K,V> {
 }
 ```
 
+注意这个骨架实现类不能去实现`Map.Entry`接口，或者它作为一个子接口因为默认方法不允许重写`Object`的方法，如：` equals`，`hashCode `， 和` toString `。
+
+因为骨骼实现类是为继承而设计的，所以您应该遵循条款19中的所有设计和文档指南。为了简洁起见，在前面的示例中省略了文档注释，但是在一个骨骼实现类中，好的文档是绝对必要的，不管它是由接口上的默认方法组成，还是由单独的抽象类组成。
