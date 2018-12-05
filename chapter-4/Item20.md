@@ -18,7 +18,7 @@ public interface Songwriter {
 }
 ```
 
-在现实生活中，一些歌手也是词曲作者。因为我们使用接口而不是抽象类来定义这些类型，所以完全允许单个类同时实现`Singer`和`Songwriter`。事实上，我们可以定义第3个接口，同时继承`Singer`和`Songwriter`接口，并添加适合于该组合的新⽅方法：
+在现实生活中，一些歌手也是词曲作者。因为我们使用接口而不是抽象类来定义这些类型，所以完全允许单个类同时实现`Singer`和`Songwriter`。事实上，我们可以定义第3个接口，同时继承`Singer`和`Songwriter`接口，并添加适合于该组合的新方法：
 
 ```java
 public interface SingerSongwriter extends Singer, Songwriter {
