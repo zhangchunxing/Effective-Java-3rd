@@ -23,3 +23,5 @@ default boolean removeIf(Predicate<? super E> filter) {
 }
 ```
 
+这是为`removeIf`方法编写的最好的通用实现，但遗憾的是，它在一些实际的集合实现上失败了。比如说，考虑一下`org.apache.commons.collections4.collection.SynchronizedCollection `。这个类来自于 **Apache Commons**库，它跟`java.util`包下的`Collections.synchronizedCollection `静态工厂返回的结果很相似。Apache版本的库额外提供了使用一个客户端提供的对象来做锁的功能，以代替集合。换一句话说，它是一个包装器类（条款18），它所有的方法在委托给被包装的对象之前，都会依靠一个锁对象来做同步的。
+
