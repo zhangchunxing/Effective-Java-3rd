@@ -28,3 +28,5 @@ default boolean removeIf(Predicate<? super E> filter) {
 Apache的`SynchronizedCollection`类仍然被积极维护着，但是在撰写本文时，它还没有覆盖`removeIf`方法。如果这个类与Java 8一起使用，那么它将继承`removeIf`的默认实现，而`removeIf`并没有(实际上也不能)维护这个类的基本承诺：自动同步每个方法调用。默认实现并不知道『同步』这件事，也无法访问包含锁定对象的字段。如果客户端在另一个线程对集合进行并发修改的情况下调用了`SynchronizedCollection`实例上的`removeIf`方法，可能会导致`ConcurrentModificationException`或其它未知行为发生。
 
 为了阻止这种事情在类似的Java平台库实现中发生，比如`Collections.synchronizedCollection`返回的包私有类，JDK维护者们不得不重写默认的`removeIf`方法实现和其他类似的方法，以便在调用默认实现之前执行必要的同步。之前的那些不是Java平台的集合实现没有机会随着接口的改变同步做出类似的变动，并且有些实现还没这样做。
+
+**默认方法的出现，当前存在的接口实现类可能编译的时候不会报错或警告，但是运行时可能失败**。这个问题虽然不是很常见，但也不是孤立的事件。在Java 8中一些被添加到集合接口中的方法是易受影响的，而且会影响一些现有的实现。
