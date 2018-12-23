@@ -28,4 +28,5 @@
   - [减少可变性](chapter-4/Item17.md)
   - [优先使用组合而非继承](chapter-4/Item18.md)
   - [优先选择接口而不是抽象类](chapter-4/Item20.md)
+  - [为子类设计接口](chapter-4/Item21.md)
 
