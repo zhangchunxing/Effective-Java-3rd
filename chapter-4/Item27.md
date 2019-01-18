@@ -56,3 +56,30 @@ required: T[]
 found: Object[]
 ```
 
+在`return`语句上添加一个`SuppressWarnings`注解是非法的，因为它不是声明[JLS, 9.7]。你可能希望将注解放到整个方法上，但是不要这么做。代替的做法是，声明一个局部变量去接受返回的值，然后在该变量上加注解。就像这样：
+
+```java
+// Adding local variable to reduce scope of @SuppressWarnings
+public <T> T[] toArray(T[] a) {
+    if (a.length < size) {
+        // This cast is correct because the array we're creating
+        // is of the same type as the one passed in, which is T[].
+        @SuppressWarnings("unchecked") T[] result = 
+            (T[]) Arrays.copyOf(elements, size, a.getClass());
+        
+        return result;
+    }
+    System.arraycopy(elements, 0, a, 0, size);
+    
+    if (a.length > size)
+    	a[size] = null;
+    return a;
+}
+```
+
+最终的方法干净地编译，并且使被消除的未受检查的警告的范围最小。
+
+**每一次你使用`@SuppressWarnings(“unchecked”)`注解时，都添加一条注释说明为什么这样做是安全的**。
+
+这有助于其他人理解这块代码，更重要的是，它将减少有人修改代码以使计算不安全的可能性。如果你觉得写一个这样的注释很难，请再想想。你最终会发现未检查的异常是不安全的。
+
