@@ -28,5 +28,8 @@
   - [减少可变性](chapter-4/Item17.md)
   - [优先使用组合而非继承](chapter-4/Item18.md)
   - [优先选择接口而不是抽象类](chapter-4/Item20.md)
-  - [为子类设计接口](chapter-4/Item21.md)
+  - [针对后代来设计接口](chapter-4/Item21.md)
+  - [使用接口只用来定义类型](chapter-4/Item22.md)
+  - [在一个源文件中只定义一个顶层类](chapter-4/Item25.md)
+  - [消除未检查的警告](chapter-4/Item27.md)
 
