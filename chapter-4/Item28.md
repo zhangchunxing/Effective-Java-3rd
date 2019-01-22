@@ -14,3 +14,4 @@ List<Object> ol = new ArrayList<Long>(); // Incompatible types
 ol.add("I don't fit in");
 ```
 
+两种方式你都不能将一个`String`类型放到一个`Long`类型的容器中，但是使用数组你可以在运行期发现你的错误；使用列表，你可以在编译期就发现你的错误。当然，你最好在编译期发现错误。

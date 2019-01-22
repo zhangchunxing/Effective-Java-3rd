@@ -39,7 +39,7 @@ class Dessert {
 
 如果通过命令`javac Main.java Dessert.java`来编译该程序，那么编译会失败，编译器会提示说定义了多个`Utensil`与`Dessert`类。
 
-这是因为编译器首先会编译`Main.java`，当它遇到对`Utensil`的引用时（它位于对`Dessert`的引用之前）会在`Utensil.java`中寻找该类，但却找到了`Utensil`与`Dessert`两个类。当编译器器遇到了命令行中的`Dessert.java`时，它也会寻找该文件，这就导致它会遇到两个`Utensil`与`Dessert`定义。
+这是因为编译器首先会编译`Main.java`，当它遇到对`Utensil`的引用时（它位于对`Dessert`的引用之前）会在`Utensil.java`中寻找该类，但却找到了`Utensil`与`Dessert`两个类。当编译器遇到了命令行中的`Dessert.java`时，它也会寻找该文件，这就导致它会遇到两个`Utensil`与`Dessert`定义。
 
 如果通过命令`javac Main.java`或是`javac Main.java Utensil.java`编译该程序，其行为与你编写`Dessert.java`文件之前时一样，会打印出`pancake`。不过，如果通过命令`javac Dessert.java Main.java`编译该程序，那么它会打印出`potpie`。这样，程序的行为就会受到传递给编译器的源文件的顺序的影响，这显然是不可接受的。
 
