@@ -18,3 +18,20 @@ ol.add("I don't fit in");
 
 数组和泛型之间的第二个主要区别是数组是具体化的[JLS, 4.7]。这意味着数组在运行时知道并强制它们的元素类型。如前所述，如果你尝试将字符串放入一个长整型的数组中，你将得到`ArrayStoreException`。相比之下，泛型是通过擦除实现的[JLS, 4.6]。这意味着泛型只在编译时执行类型约束，并在运行时丢弃(或擦除)元素类型信息。擦除允许泛型类型与不使用泛型的遗留代码自由地互相操作(条款26)，确保在Java 5中平稳地过渡到泛型。
 
+由于这些基本差异，数组和泛型不能很好地混合在一起。例如，创建泛型类型、参数化类型或类型参数的数组是非法的。因此，这些数组创建表达式都是不合法的：`new List<E>[]`， `new List<String>[]`， `new E[]`。所有这些都会在编译时导致泛型数组创建错误。
+
+为什么创建泛型数组是非法的呢？因为它不是类型安全的。如果合法，则编译器在其他正确的程序中生成的强制类型转换可能在运行时失败，并带有`ClassCastException`。这将违反泛型类型系统提供的基本保证。
+
+为了使这更具体，请考虑以下代码片段：
+
+```java
+// Why generic array creation is illegal - won't compile!
+List<String>[] stringLists = new List<String>[1]; // (1)
+List<Integer> intList = List.of(42); // (2)
+Object[] objects = stringLists; // (3)
+objects[0] = intList; // (4)
+String s = stringLists[0].get(0); // (5)
+```
+
+
+
