@@ -35,3 +35,27 @@ String s = stringLists[0].get(0); // (5)
 
 假设第1行创建了一个泛型数组，它是合法的。第2行创建并初始化一个包含单个元素的`List<Integer>`。第3行将一个元素类型为`List<String>`的数组存储到一个元素类型为`Object`的数组中，这是合法的因为数组是协变的。第4行将`List<Integer>`存储到`Object`数组的一个元素，因为泛型是通过擦除实现的，所以这样做是可以的：一个`List<Intege>`类型的实例运行时的类型就是`List`，并且` List<String>[]`的实例运行时的类型就是`List[]`，因此这样的赋值不会生成`ArrayStoreException`。现在我们陷入了麻烦。我们将一个`List<Integer>`的实例存储到了一个被声明为仅仅容纳` List<String> `实例的数组中。在第5行中，我们从这个数组的唯一列表中检索唯一元素。编译器自动将检索到的元素转换为字符串，但它是一个整数，因此我们在运行时得到`ClassCastException`。为了防止这种情况发生，第1行(它创建一个泛型数组)必须生成一个编译时错误。
 
+`E`、`List<E>`和`List<String>`等类型在技术上称为非具体化类型[JLS, 4.7]。直观地说，非具体化类型的运行时表示包含的信息少于其编译时表示。由于擦除，唯一可具体化的参数化类型是无边界通配符类型，如`List<?>`和` Map<?,?>`(26项)。创建无边界通配符类型的数组是合法的，但很少有用。
+
+禁止创建泛型数组可能很烦人。例如，这意味着泛型集合通常不可能返回其元素类型的数组(但是部分解决方案参见第33项)。这也意味着在结合使用有可变参数的方法(第53项)和泛型类型时，你会得到令人困惑的警告。这是因为每次调用可变参数的方法时，都会创建一个数组来保存参数。如果该数组的元素类型不可具体化，则会得到警告。`SafeVarargs`注解可用于解决此问题(项目32)。
+
+当你在转换为数组类型时遇到泛型数组创建错误或未检查的转换警告时，最好的解决方案通常是使用集合类型`List<E>`，而不是数组类型`E[]`。你可能会牺牲一些简洁性或性能，但作为交换，你可以获得更好的类型安全性和互操作性。
+
+例如，假设你想编写一个`Chooser`类，该类的构造函数接受一个集合，而单个方法随机返回所选择的集合的一个元素。根据传递给构造函数的集合，你可以将选择器用作游戏骰子、魔术8球或蒙特卡洛模拟的数据源。下面是一个没有泛型的简单实现：
+
+```java
+// Chooser - a class badly in need of generics!
+public class Chooser {
+    private final Object[] choiceArray;
+        public Chooser(Collection choices) {
+        choiceArray = choices.toArray();
+    }
+    public Object choose() {
+        Random rnd = ThreadLocalRandom.current();
+        return choiceArray[rnd.nextInt(choiceArray.length)];
+	}
+}
+```
+
+
+
