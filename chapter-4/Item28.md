@@ -57,5 +57,44 @@ public class Chooser {
 }
 ```
 
+使用这个类，每次你调用`choose`方法，你都不得不把方法的返回值从`Object`类型转成声明的类型，并且如果你得到了一个错误的类型，那么类型转换会在运行期间失败。考虑到条款29的建议，我们试图修改`Chooser`，使其具有通用性。变化以粗体显示：
 
+```java
+// A first cut at making Chooser generic - won't compile
+public class Chooser<T> {
+    private final T[] choiceArray;
+    public Chooser(Collection<T> choices) {
+    choiceArray = choices.toArray();
+}
+// choose method unchanged
+}
+```
+
+如果你尝试编译这个类，你会得到这样的错误信息：
+
+```java
+Chooser.java:9: error: incompatible types: Object[] cannot be
+converted to T[]
+choiceArray = choices.toArray();
+							  ^
+where T is a type-variable:
+  T extends Object declared in class Chooser
+```
+
+你会说，这不是大问题，没什么大不了的，你会说，我把对象数组转换成`T`数组：
+
+```java
+choiceArray = (T[]) choices.toArray();
+```
+
+这样做消除了错误，但你会得到一个警告：
+
+```java
+Chooser.java:9: warning: [unchecked] unchecked cast
+choiceArray = (T[]) choices.toArray();
+                                    ^
+required: T[], found: Object[]
+where T is a type-variable:
+T extends Object declared in class Chooser
+```
 
