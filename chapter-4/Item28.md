@@ -95,6 +95,25 @@ choiceArray = (T[]) choices.toArray();
                                     ^
 required: T[], found: Object[]
 where T is a type-variable:
-T extends Object declared in class Chooser
+T extends Object declared in cass Chooser
 ```
 
+编译器告诉你，它不能保证在运行时强制转换的安全性，因为程序不知道类型`T`代表什么——记住，元素类型信息在运行时从泛型中擦除。这个计划行得通吗？是的，但是编译器不能证明它。你可以向自己证明这一点，在注释中添加说明，并使用注解压制警告，但是最好消除导致警告的原因(条款27)。若要消除未检查的强制转换警告，请使用列表而不是数组。这是`Chooser`类的一个版本，编译时没有错误或警告：
+
+```java
+// List-based Chooser - typesafe
+public class Chooser<T> {
+    private final List<T> choiceList;
+    public Chooser(Collection<T> choices) {
+    	choiceList = new ArrayList<>(choices);
+    }
+    public T choose() {
+        Random rnd = ThreadLocalRandom.current();
+        return choiceList.get(rnd.nextInt(choiceList.size()));
+	}
+}
+```
+
+这个版本稍微冗长一些，可能稍微慢一些，但是为了让你安心，在运行时不会得到`ClassCastException`是值得的。
+
+总之，数组和泛型有非常不同的类型规则。数组是协变的、具体化的；泛型是不变的和被擦除的。因此，数组提供运行时类型安全，而不是编译时类型安全，泛型则相反。通常，数组和泛型不能很好地混合。如果你发现将它们混合在一起，并得到编译时错误或警告，那么你的第一反应应该是用列表替换数组。
