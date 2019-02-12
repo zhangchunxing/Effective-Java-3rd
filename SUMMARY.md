@@ -32,4 +32,4 @@
   - [使用接口只用来定义类型](chapter-4/Item22.md)
   - [在一个源文件中只定义一个顶层类](chapter-4/Item25.md)
   - [消除未检查的警告](chapter-4/Item27.md)
-
+  - [优先选择列表而非数组](chapter-4/Item28.md)
