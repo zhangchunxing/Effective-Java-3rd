@@ -23,7 +23,7 @@
   * [优先使用try-with-resources而非try-finally](chapter-2/Item9.md)
 
 
-- [对所有对象通用的方法](chapter-4/README.md)
+- [类和接口](chapter-4/README.md)
   - [在公有类中，请使用访问器方法而非公有字段](chapter-4/Item16.md)
   - [减少可变性](chapter-4/Item17.md)
   - [优先使用组合而非继承](chapter-4/Item18.md)
@@ -31,5 +31,7 @@
   - [针对后代来设计接口](chapter-4/Item21.md)
   - [使用接口只用来定义类型](chapter-4/Item22.md)
   - [在一个源文件中只定义一个顶层类](chapter-4/Item25.md)
-  - [消除未检查的警告](chapter-4/Item27.md)
-  - [优先选择列表而非数组](chapter-4/Item28.md)
+
+- [泛型](chapter-5/README.md)
+  - [消除未检查的警告](chapter-5/Item27.md)
+  - [优先选择列表而非数组](chapter-5/Item28.md)
