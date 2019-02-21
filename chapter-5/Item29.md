@@ -88,3 +88,34 @@ found: Object[], required: E[]
 ```
 
 编译器可能无法证明你的程序是类型安全的，但你可以。你必须说服自己，未经检查的强制转换不会损害程序的类型安全。问题中的数组(`elements`)存储在私有字段中，并且从未返回给客户端或传递给任何其他方法。存储在数组中的元素仅仅传递给了`push`方法，方法中的元素类型也是`E`，所以未检查的强制转换不会造成任何危害。
+
+一旦你证明了未经检查的强制转换是安全的，请将警告限制在尽可能小的范围内(条款27)。在这种情况下，构造函数只包含了未检查的数组创建，因此在整个构造函数中去抑制警告是合适的。通过添加注解来抑制异常，`Stack`可以干净地编译，并且你可以使用它而不用显式强制转换或担心`ClassCastException`。
+
+```java
+// The elements array will contain only E instances from push(E).
+// This is sufficient to ensure type safety, but the runtime
+// type of the array won't be E[]; it will always be Object[]!
+@SuppressWarnings("unchecked")
+public Stack() {
+	elements = (E[]) new Object[DEFAULT_INITIAL_CAPACITY];
+}
+```
+
+消除`Stack`中泛型数组创建错误的第二种方法是将字段`elements`的类型从`E[]`更改为`Object[]`。如果你这样做，你会得到一个不同的错误：
+
+```java
+Stack.java:19: incompatible types
+found: Object, required: E
+       E result = elements[--size];
+                          ^
+```
+
+你可以通过将从数组中检索到的元素转换为`E`来将这个错误转换为一个警告，但是你会得到一个警告：
+
+```java
+Stack.java:19: warning: [unchecked] unchecked cast
+found: Object, required: E
+       E result = (E) elements[--size];
+                              ^
+```
+
