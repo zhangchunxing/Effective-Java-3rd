@@ -119,3 +119,34 @@ found: Object, required: E
                               ^
 ```
 
+因为`E`不是一个具体的类型，编译器无法在运行时检查类型类型转换的。但是，你可以很容易地向自己证明未经检查的强制类型转换是安全的，所以抑制警告是允许的。根据条款27的建议，我们仅在包含未了未检查的类型转换的赋值语句上去抑制警告，而不是在整个`pop`方法上：
+
+```java
+// Appropriate suppression of unchecked warning
+public E pop() {
+    if (size == 0)
+    	throw new EmptyStackException();
+    
+    // push requires elements to be of type E, so cast is correct
+    @SuppressWarnings("unchecked")
+    E result = (E) elements[--size];
+    elements[size] = null; // Eliminate obsolete reference
+    return result;
+}
+```
+
+这两种消除范型数组创建的技术都有人使用。第一个方法可读性更强：数组被声明为类型`E[]`，这清楚地表明它只包含实例E。它也更简洁：在一个典型的泛型类中，从代码中的许多点读取数组；第一种技术只需要一次转换（在创建数组的地方）而第二种技术在每次读取数组元素时都需要单独的转换。因此，第一种技术是可取的，在实践中更常用。但是，它确实会造成堆污染（条款32）：数组的运行时类型与其编译时类型不匹配(除非`E`恰好是`Object`)。这使得一些程序员非常不安，他们选择了第二种技术，尽管在这种情况下堆污染是无害的。
+
+下面的程序演示了我们的泛型类`Stack`的使用。该程序以相反的顺序打印命令行参数并转换为大写。在从`Stack`弹出的元素上调用`String`的`toUpperCase`方法不需要显式转换，自动生成的转换保证成功：
+
+```java
+// Little program to exercise our generic Stack
+public static void main(String[] args) {
+    Stack<String> stack = new Stack<>();
+    for (String arg : args)
+    	stack.push(arg);
+    while (!stack.isEmpty())
+    	System.out.println(stack.pop().toUpperCase());
+}
+```
+
