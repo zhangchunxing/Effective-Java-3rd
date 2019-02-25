@@ -150,3 +150,18 @@ public static void main(String[] args) {
 }
 ```
 
+上面的例子可能与条款28相矛盾，条款28鼓励优先使用列表而不是数组。在泛型类型中使用列表并不总是可行的或令人满意的。Java本身不支持列表，因此一些泛型类型（如`ArrayList`）必须在数组上实现。其他泛型类型（如`HashMap`）是在数组上实现的，以提高性能。
+
+大多数泛型类型都像我们的`Stack`示例，因为它们的类型参数没有限制：
+
+你可以创建一个`Stack<Object>`，`Stack<int[]>`，` Stack<List<String>> `或这任何其他对象引用类型的`Stack`。注意你不能创建原生类型的`Stack`：试着创建`Stack<int>`或`Stack<double>`，这将导致编译期错误。这是`Java`泛型类型系统的一个基本限制。你可以通过使用装箱的基本类型（条款61）来绕过这一限制。
+
+有一些泛型类型限制其类型参数的允许值。比如说，考虑`java.util.concurrent.DelayQueue`的声明如下：
+
+```java
+class DelayQueue<E extends Delayed> implements BlockingQueue<E>
+```
+
+类型参数列表（`<E extends Delayed>`）要求实际的类型参数`E`是` java.util.concurrent.Delayed `的一个子类型。这允许`DelayQueue`的实现和客户端对`DelayQueue`的元素使用方法`Delayed `，而不需要显式强制转换或冒着`ClassCastException`的风险。类型参数`E`称为**有界类型参数**。注意，子类型关系的定义使得每个类型都是其自身的子类型[JLS, 4.10]，因此创建`DelayQueue<Delayed>`是合法的。
+
+总之，相对于在客户端代码中进行类型转换，泛型类型更安全，也更容易使用。当你在设计新类型的时候，确保它们不需要类型转换就可以使用。这通常意味着使得类型泛型化。如果你有一些已经存在的类型，它们本应该泛型化的但是没有，那么去将他们泛型化。对初次使用这些类型的人来说，用起来更容易，在不破坏现有客户端的情况下（条款26）。
