@@ -37,3 +37,52 @@ public static <E> Set<E> union(Set<E> s1, Set<E> s2) {
 }
 ```
 
+至少对于简单的泛型方法，这就是全部。此方法编译时不生成任何警告，并提供了类型安全性和易用性。这里有一个简单的程序来练习这个方法。这个程序没有类型转换，并且编译时没有任何错误或者警告出现：
+
+```java
+// Simple program to exercise generic method
+public static void main(String[] args) {
+	Set<String> guys = Set.of("Tom", "Dick", "Harry");
+	Set<String> stooges = Set.of("Larry", "Moe", "Curly");
+	Set<String> aflCio = union(guys, stooges);
+	System.out.println(aflCio);
+}
+```
+
+当你运行这个程序时，它会打印出[Moe, Tom, Harry, Larry, Curly, Dick]。(输出中元素的顺序取决于实现)。`union`方法的一个限制是，3个集合（2个输入参数和1个返回值）的类型必须完全相同。可以通过使用**有界通配符类型（条款31）**使方法更加灵活。
+
+有时候，你需要创建一个不可变的对象，但是要适用于许多不同的类型。因为泛型是通过擦护来实现的（条款28），所以你可以用一个单独的`Object`来代表所有需要的类型参数，但是你需要写一个静态工厂方法来重复地为每一个需要的类型参数分配一个`Object`。这种模式，叫做**通用的单例工厂**，被使用在函数对象（条款42）上，如`Collections.reverseOrder`，并且有时候对于集合来说，如`Collections.emptySet`。
+
+假设你想编写一个恒等函数分发器。Java库已经提供了`Function.identity`，所以你没有理由自己写一个，虽然它是有启发性的。在请求一个新的恒等函数对象时创建它是浪费时间的，因为它是无状态的。如果Java的泛型被具体化，那么每个类型都需要一个恒等函数，但是由于它们被类型擦除了，所以一个泛型单例就足够了。它是这样的：
+
+```java
+// Generic singleton factory pattern
+private static UnaryOperator<Object> IDENTITY_FN = (t) -> t;
+
+@SuppressWarnings("unchecked")
+public static <T> UnaryOperator<T> identityFunction() {
+	return (UnaryOperator<T>) IDENTITY_FN;
+}
+```
+
+将`IDENTITY_FN`强制转换为`(UnaryFunction<T>)`会生成一个未检查的强制转换警告，因为`UnaryOperator<Object>`不是针对每个`T`的`UnaryOperator<T>`。但是，恒等函数是特别的：它会返回它的参数，没有任何修改。所以，我们知道`IDENTITY_FN`转`(UnaryFunction<T>)`是类型安全的，无论`T`的值是什么。
+
+因此，我们可以自信地抑制这个类型转换带来的未检查的类型转换异常。一旦我们这么做了，代码编译后。不会有错误和警告。
+
+下面是一个示例程序，它使用我们的泛型单例作为`UnaryOperator<String>`和`UnaryOperator<Number>`。正常情况下，它不会包含类型转换并且编译后没有错误和警告：
+
+```java
+// Sample program to exercise generic singleton
+public static void main(String[] args) {
+	String[] strings = { "jute", "hemp", "nylon" };
+	UnaryOperator<String> sameString = identityFunction();
+	for (String s : strings)
+		System.out.println(sameString.apply(s));
+    
+	Number[] numbers = { 1, 2.0, 3L };
+	UnaryOperator<Number> sameNumber = identityFunction();
+	for (Number n : numbers)
+		System.out.println(sameNumber.apply(n));
+}
+```
+
