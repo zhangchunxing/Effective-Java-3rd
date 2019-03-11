@@ -86,3 +86,37 @@ public static void main(String[] args) {
 }
 ```
 
+类型参数由包含该类型参数本身的相同表达式约束，这是允许的，尽管这种情况相对较少。这就是所谓的递归类型边界。递归类型边界的一个常见用法是与`Comparable`接口连接，它定义了类型的自然顺序（条款14）。这个接口如下所示：
+
+```java
+public interface Comparable<T> {
+	int compareTo(T o);
+}
+```
+
+类型参数`T`定义了实现`Comparable<T>`的类型的元素可以与之进行比较的类型。实际上，几乎所有类型都只能与自己类型的元素进行比较。例如，`String`实现`Comparable<String>`， `Integer`实现`Comparable<Integer>`等等。
+
+许多方法接受一个实现了`Comparable`接口的元素的集合，用来对其进行排序，查找，计算最大值或最小值，等等。为了实现这些，集合里的每个元素必须可以和其它元素比较，换句话说，列表中的元素必须可以相互比较。下面是如何表达这种约束：
+
+```java
+// Using a recursive type bound to express mutual comparability
+public static <E extends Comparable<E>> E max(Collection<E> c);
+```
+
+这里的类型限定符`<E extends Comparable<E>>`可以读成“任意一个类型`E`都可以与自身比较”，这或多或少与相互比较的概念相对应。
+
+下面是与前面的声明一起使用的方法。它根据元素的自然顺序计算集合中的最大值，并且编译时没有错误或警告：
+
+```java
+// Returns max value in a collection - uses recursive type bound
+public static <E extends Comparable<E>> E max(Collection<E> c) {
+	if (c.isEmpty())
+		throw new IllegalArgumentException("Empty collection");
+	E result = null;
+	for (E e : c)
+		if (result == null || e.compareTo(result) > 0)
+			result = Objects.requireNonNull(e);
+	return result;
+}
+```
+
