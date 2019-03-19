@@ -35,3 +35,6 @@
 - [泛型](chapter-5/README.md)
   - [消除未检查的警告](chapter-5/Item27.md)
   - [优先选择列表而非数组](chapter-5/Item28.md)
+  - [优先考虑泛型类型](chapter-5/Item29.md)
+  - [优先考虑泛型方法](chapter-5/Item30.md)
+
