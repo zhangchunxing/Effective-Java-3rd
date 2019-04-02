@@ -38,3 +38,7 @@
   - [优先考虑泛型类型](chapter-5/Item29.md)
   - [优先考虑泛型方法](chapter-5/Item30.md)
 
+- [枚举和注解](chapter-6/README.md)
+  - [使用实例字段而非序数](chapter-6/Item35.md)
+  - [使用EnumSet代替位字段](chapter-6/Item36.md)
+
