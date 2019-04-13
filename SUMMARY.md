@@ -41,4 +41,5 @@
 - [枚举和注解](chapter-6/README.md)
   - [使用实例字段而非序数](chapter-6/Item35.md)
   - [使用EnumSet代替位字段](chapter-6/Item36.md)
+  - [始终如一地使用Override注解](chapter-6/Item40.md)
 
