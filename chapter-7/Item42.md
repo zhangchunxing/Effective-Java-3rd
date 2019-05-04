@@ -20,3 +20,4 @@ Collections.sort(words, new Comparator<String>() {
 Collections.sort(words, (s1, s2) -> Integer.compare(s1.length(), s2.length()));
 ```
 
+注意，lambda （`Comparator<String>`）的类型、它的参数（s1和s2都是字符串）类型和其返回值（int）的类型都没有出现在代码中。编译器使用称为**类型推断**的方法从上下文中推断这些类型。在某些情况下，编译器无法确定类型，这时你必须指定类型。类型推断的规则很复杂：它们在JLS中占了整整一章节[JLS, 18]。很少有程序员能够详细地理解这些规则，但这没有关系。尽可能省略所有lambda表达式的参数的类型，除非它们的存在使程序更清晰。如果编译器生成一个错误，告诉你它不能推断lambda表达式的参数的类型，那么就去指定参数类型。有时你可能需要将返回值或整个lambda表达式强制类型转换，但这种情况很少见。
