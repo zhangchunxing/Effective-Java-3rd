@@ -36,5 +36,64 @@ Collections.sort(words, comparingInt(String::length));
 words.sort(comparingInt(String::length));
 ```
 
+语言中添加lambdas使得在以前没有意义的地方使用函数对象变得更加实际。比如，考虑条款34中的操作枚举类型。因为每个枚举的`apply`方法需要不同的行为，所以我们使用了指定类体的常量，并覆盖了每个枚举常量中的`apply`方法。要刷新你的记忆，以下代码：
 
+```java
+// Enum type with constant-specific class bodies & data (Item 34)
+public enum Operation {
+	PLUS("+") {
+		public double apply(double x, double y) { return x + y; }
+	},
+    
+	MINUS("-") {
+		public double apply(double x, double y) { return x - y; }
+	},
+	
+    TIMES("*") {
+		public double apply(double x, double y) { return x * y; }
+	},
+    
+	DIVIDE("/") {	
+		public double apply(double x, double y) { return x / y; }
+	};
+    
+	private final String symbol;
+    
+	Operation(String symbol) { this.symbol = symbol; }
+    
+	@Override
+	public String toString() { return symbol; }
+    
+	public abstract double apply(double x, double y);
+}
+```
+
+条款34说到枚举实例字段比指定类体的常量更可取。使用前者代替后者的方法，lambda更容易实现指定常量的行为。只需将实现每个枚举常量行为的lambda传递给它的构造函数。构造函数将lambda存储在实例字段中，`apply`方法将调用转发给lambda。最终生成的代码比原始版本更简单、更清晰：
+
+```java
+// Enum with function object fields & constant-specific behavior
+public enum Operation {
+	PLUS ("+", (x, y) -> x + y),
+	MINUS ("-", (x, y) -> x - y),
+	TIMES ("*", (x, y) -> x * y),
+	DIVIDE("/", (x, y) -> x / y);
+    
+	private final String symbol;
+	private final DoubleBinaryOperator op;
+    
+	Operation(String symbol, DoubleBinaryOperator op) {
+		this.symbol = symbol;
+		this.op = op;
+	}
+    
+	@Override
+    public String toString() {
+        return symbol;
+    }
+    
+	public double apply(double x, double y) {
+		return op.applyAsDouble(x, y);
+	}
+}
+```
 
