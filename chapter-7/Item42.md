@@ -97,3 +97,4 @@ public enum Operation {
 }
 ```
 
+注意，我们对表示枚举常量行为的lambda使用了`DoubleBinaryOperator`接口。这是`java.util.function`中众多预定义的函数式接口之一（条款44）。它表示一个函数，该函数接受两个`double`型参数并返回一个`double`型结果。
