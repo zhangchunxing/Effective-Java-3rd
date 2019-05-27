@@ -16,3 +16,4 @@ map.merge(key, 1, (count, incr) -> count + incr);
 map.merge(key, 1, Integer::sum);
 ```
 
+方法的参数越多，你可以通过方法引用消除的样板代码就越多。然而，在某些lambda中，你选择的参数名称提供了有用的文档，使得lambda比方法引用更具可读性和可维护性，即使lambda较长。
