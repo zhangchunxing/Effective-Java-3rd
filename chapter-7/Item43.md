@@ -19,3 +19,18 @@ map.merge(key, 1, Integer::sum);
 方法的参数越多，你可以通过方法引用消除的样板代码就越多。然而，在某些lambda中，你选择的参数名称提供了有用的文档，使得lambda比方法引用更具可读性和可维护性，即使lambda较长。
 
 使用方法引用或者lambdas，你就不需做其他事情（有一个不太明显的例外—如果你感兴趣，请参阅JLS，9.9-2）。也就是说，方法引用通常会产生更短、更清晰的代码。如果lambdas太长或太复杂，他也会给你个提示：你可以将代码从lambda提取到一个新方法中，并用对该方法的引用替换lambda。你可以给方法取个好名字，并且记录你的核心内容。
+
+如果你正在使用IDE编程，它会尽可能提示用方法引用代替lambda。通常来讲，你应该接受IDE的建议，但不总是如此。有时候，lambda会比方法引用更简洁。这种情况通常发生在方法与lambda位于同一个类中时。比如，考虑这个代码片段，它假定发生在一个名为`GoshThisClassNameIsHumongous`的类中：
+
+```java
+service.execute(GoshThisClassNameIsHumongous::action);
+```
+
+等价的lambda是这样的：
+
+```java
+service.execute(() -> action());
+```
+
+
+
