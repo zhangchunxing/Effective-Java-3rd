@@ -32,5 +32,5 @@ service.execute(GoshThisClassNameIsHumongous::action);
 service.execute(() -> action());
 ```
 
-
+使用方法引用的代码片段并不比使用lambda的代码片段简洁和清晰，所以这里选择后者。与之类似地，`Function`接口提供了一个通用的静态工厂方法来返回`identity`函数，`Function.identity()`。然而，不使用这个方法，使用等价的内联lambda：`x -> x`，通常会更简短和清晰。
 
