@@ -42,4 +42,10 @@
   - [使用实例字段而非序数](chapter-6/Item35.md)
   - [使用EnumSet代替位字段](chapter-6/Item36.md)
   - [始终如一地使用Override注解](chapter-6/Item40.md)
+  - [使用标记接口来定义类型](chapter-6/Item41.md)
+  
+ - [Lambda和Stream](chapter-7/README.md)
+  - [优先选择lambdas而非匿名类](chapter-7/Item42.md)
+  - [优先选择方法引用而非lambdas](chapter-6/Item43.md)
+
 
