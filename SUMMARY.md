@@ -46,6 +46,6 @@
   
 - [Lambda和Stream](chapter-7/README.md)
   - [优先选择lambdas而非匿名类](chapter-7/Item42.md)
-  - [优先选择方法引用而非lambdas](chapter-6/Item43.md)
+  - [优先选择方法引用而非lambdas](chapter-7/Item43.md)
 
 
