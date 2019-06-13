@@ -12,3 +12,13 @@ protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
 }
 ```
 
+这种技术工作得很好，但是使用lambdas可以做得更好。如果`LinkedHashMap`是今天编写的，它将有一个接受函数对象的静态工厂或构造方法。看着`removeEldestEntry`的方法声明，你可能认为函数对象应该接受一个`Map<K,V>`，并且返回一个布尔值。但这并不能完全做到：`removeEldestEntry`方法调用`size()`来获得`Map`中的条目数量，这样做是因为`removeEldestEntry`是`Map`上的一个实例方法。传递给构造方法的函数对象不是`Map`上的实例方法，因此无法捕获它，因为在调用其工厂或构造函数时`Map`还不存在。因此，`Map`必须将自己传递给函数对象，函数对象因此必须在输入时接收`Map`和它的最老的条目。如果你要声明这样一个函数接口，它应该是这样的：
+
+```java
+// Unnecessary functional interface; use a standard one instead.
+@FunctionalInterface
+interface EldestEntryRemovalFunction<K,V> {
+	boolean remove(Map<K,V> map, Map.Entry<K,V> eldest);
+}
+```
+
