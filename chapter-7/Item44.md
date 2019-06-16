@@ -27,3 +27,16 @@ interface EldestEntryRemovalFunction<K,V> {
 `java.util.Function`包下有43个接口。你不能期望记住所有的接口，但是如果你记住了6个基础接口，你就可以在需要时派生出其余的接口。这些基础接口操作于对象的引用类型。`Opertaion`接口表示结果和参数类型是相同的函数。`Predicate`接口表示接受参数并返回布尔值的函数。`Funcation`接口表示参数和返回类型不同的函数。
 
 `Supplier`接口表示不接受参数并返回值的函数。最后，`Consumer`表示一个函数，该函数接受一个参数，但什么也不返回，本质上是消费它的参数。6大基础函数式接口概述如下：
+
+| 接口              | 函数式签名          | 例子                |
+| ----------------- | ------------------- | ------------------- |
+| UnaryOperator<T>  | T apply(T t)        | String::toLowerCase |
+| BinaryOperator<T> | T apply(T t1, T t2) | BigInteger::add     |
+| Predicate<T>      | boolean test(T t)   | Collection::isEmpty |
+| Function<T,R>     | R apply(T t)        | Arrays::asList      |
+| Supplier<T>       | T get()             | Instant::now        |
+| Consumer<T>       | void accept(T t)    | System.out::println |
+
+这6个基础接口中每一个都有3个变形，用于操作原生类型：`int`，`long`和`double`。变形的接口名字就是给基础接口的名字前加上原生类型的名称而得到的。比如，接受`int`类型的断言就叫`IntPredicate`，还有接受2个`long`型并且返回1个`long`型的二元操作叫做`LongBinaryOperator`。这些变种类型都没有参数化，除了`Function`变种，它的返回类型参数化了。比如，`LongFunction<int[]>`接受一个`long`型，返回一个`int[]`。
+
+`Function`接口还有9中额外的变形，供结果类型是私有的时候使用。源类型和结果类型总是不同，因为从一个类型到自身的接口叫`UnaryOperator`。如果源类型和结果类型都是基本类型，那就给`Function`加上`Src To Result`前缀。比如，` LongToIntFunction `（6个变形）。如果源是基本类型，而结果是一个对象引用，那就给`Function`加上` <Src> ToObj `前缀，比如，`DoubleToObjFunction`（3个变形）。
