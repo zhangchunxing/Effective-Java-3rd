@@ -40,3 +40,5 @@ interface EldestEntryRemovalFunction<K,V> {
 这6个基础接口中每一个都有3个变形，用于操作原生类型：`int`，`long`和`double`。变形的接口名字就是给基础接口的名字前加上原生类型的名称而得到的。比如，接受`int`类型的断言就叫`IntPredicate`，还有接受2个`long`型并且返回1个`long`型的二元操作叫做`LongBinaryOperator`。这些变种类型都没有参数化，除了`Function`变种，它的返回类型参数化了。比如，`LongFunction<int[]>`接受一个`long`型，返回一个`int[]`。
 
 `Function`接口还有9中额外的变形，供结果类型是私有的时候使用。源类型和结果类型总是不同，因为从一个类型到自身的接口叫`UnaryOperator`。如果源类型和结果类型都是基本类型，那就给`Function`加上`Src To Result`前缀。比如，` LongToIntFunction `（6个变形）。如果源是基本类型，而结果是一个对象引用，那就给`Function`加上` <Src> ToObj `前缀，比如，`DoubleToObjFunction`（3个变形）。
+
+其中有3个基础函数式接口的2个参数版本是有意义的：`BiPredicate<T,U>` , ` BiFunction<T,U,R>` 和 `BiConsumer<T,U>`。还有返回3个相关的原生类型的`BiFunction `变形：` ToIntBiFunction<T,U>`，`ToLongBiFunction<T,U>` `和ToDoubleBiFunction<T,U>`。`Consumer`的2个参数变形，接受一个对象引用和一个原生类型：`ObjDoubleConsumer<T> `，`ObjIntConsumer<T> `和` ObjLongConsumer<T> `。总共有9种2个参数版本的基础接口。
