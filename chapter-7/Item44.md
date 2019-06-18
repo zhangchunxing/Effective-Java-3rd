@@ -42,3 +42,5 @@ interface EldestEntryRemovalFunction<K,V> {
 `Function`接口还有9中额外的变形，供结果类型是私有的时候使用。源类型和结果类型总是不同，因为从一个类型到自身的接口叫`UnaryOperator`。如果源类型和结果类型都是基本类型，那就给`Function`加上`Src To Result`前缀。比如，` LongToIntFunction `（6个变形）。如果源是基本类型，而结果是一个对象引用，那就给`Function`加上` <Src> ToObj `前缀，比如，`DoubleToObjFunction`（3个变形）。
 
 其中有3个基础函数式接口的2个参数版本是有意义的：`BiPredicate<T,U>` , ` BiFunction<T,U,R>` 和 `BiConsumer<T,U>`。还有返回3个相关的原生类型的`BiFunction `变形：` ToIntBiFunction<T,U>`，`ToLongBiFunction<T,U>` `和ToDoubleBiFunction<T,U>`。`Consumer`的2个参数变形，接受一个对象引用和一个原生类型：`ObjDoubleConsumer<T> `，`ObjIntConsumer<T> `和` ObjLongConsumer<T> `。总共有9种2个参数版本的基础接口。
+
+最后，还有`BooleanSupplier`接口。它是返回布尔值的`Supplier`的变体。除了`Predicate`及其4种变体形式支持布尔类型返回值，这是标准函数式接口名中唯一明确提到布尔类型的地方。`BooleanSupplier`接口和前面段落中描述的42个接口构成了所有43个标准函数式接口。诚然，这是一件难以接受的事情，而且并不完全正交。另一方面，你需要的大部分函数式接口都已经为你写好，并且它们的名称非常规则，所以当你需要时，你应该不会遇到太多麻烦。
