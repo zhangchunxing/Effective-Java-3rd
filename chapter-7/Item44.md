@@ -24,9 +24,7 @@ interface EldestEntryRemovalFunction<K,V> {
 
 该接口使用起来没什么问题，不过你不应该用它，因为无需为了这个目的而声明一个新接口。`java.util.function`包提供了大量标准的函数式接口供你使用。**如果某个标准的函数式接口可以满足要求，那么你就应该使用它而不是新建函数式接口**。这会使得API更加易于学习，减少了学习成本，并且提供了更好的互操作性，因为很多标准的函数式接口都提供了有用的默认方法比如说，`Predicate`接口就提供了用于组合谓词的方法。对于我们这个`LinkedHashMap`示例来说，我们应该优先使用标准的`BiPredicate<Map<K,V>`,`Map.Entry<K,V>>`接口而非自定义的`EldestEntryRemovalFunction`接口。
 
-`java.util.Function`包下有43个接口。你不能期望记住所有的接口，但是如果你记住了6个基础接口，你就可以在需要时派生出其余的接口。这些基础接口操作于对象的引用类型。`Opertaion`接口表示结果和参数类型是相同的函数。`Predicate`接口表示接受参数并返回布尔值的函数。`Funcation`接口表示参数和返回类型不同的函数。
-
-`Supplier`接口表示不接受参数并返回值的函数。最后，`Consumer`表示一个函数，该函数接受一个参数，但什么也不返回，本质上是消费它的参数。6大基础函数式接口概述如下：
+`java.util.function`中有43个接口。我们不能要求你将他们都记住，不过如果记住6个基本的接口，那么在需要时就可以扩展了。这些基本的接口是对对象引用类型进行操作的。`Operator`接口表示结果与参数类型都一样的函数。`Predicate`接口表示接收一个参数并返回boolean的函数。`Function`接口表示参数与返回类型不同的函数。`Supplier`接口表示不接收参数并返回（或是『提供』）一个值的函数。最后，`Consumer`表示接收一个参数并且不返回结果的函数，我们称之为消费掉其参数。这6个基本的函数式接口如下表所示：
 
 | 接口              | 函数式签名          | 例子                |
 | ----------------- | ------------------- | ------------------- |
@@ -37,11 +35,11 @@ interface EldestEntryRemovalFunction<K,V> {
 | Supplier<T>       | T get()             | Instant::now        |
 | Consumer<T>       | void accept(T t)    | System.out::println |
 
-这6个基础接口中每一个都有3个变形，用于操作原生类型：`int`，`long`和`double`。变形的接口名字就是给基础接口的名字前加上原生类型的名称而得到的。比如，接受`int`类型的断言就叫`IntPredicate`，还有接受2个`long`型并且返回1个`long`型的二元操作叫做`LongBinaryOperator`。这些变种类型都没有参数化，除了`Function`变种，它的返回类型参数化了。比如，`LongFunction<int[]>`接受一个`long`型，返回一个`int[]`。
+对于这6个基本的接口来说，每一个都有3个变种，分别用于操纵原生类型`int`，`long`和`double`。其名字衍生自这些基本的接口，只不过每一个都在前面加上了一个原生类型。比如说，接收一个`int`的`predicate`叫做`IntPredicate`，接收两个`long`值并返回一个`long`的二元操作叫做`LongBinaryOperator`。这些变种都不是参数化的，除了`Function`变种，它是通过返回类型进行参数化的。比如说，`LongFunction<int[]>`接收一个`long`并返回一个int[]。
 
-`Function`接口还有9中额外的变形，供结果类型是私有的时候使用。源类型和结果类型总是不同，因为从一个类型到自身的接口叫`UnaryOperator`。如果源类型和结果类型都是基本类型，那就给`Function`加上`Src To Result`前缀。比如，` LongToIntFunction `（6个变形）。如果源是基本类型，而结果是一个对象引用，那就给`Function`加上` <Src> ToObj `前缀，比如，`DoubleToObjFunction`（3个变形）。
+`Function`接口还有另外9个变种，用在结果类型为原生类型的场景下。其源与结果类型总是不同的，因为从一种类型得到相同类型的函数是`UnaryOperator`。如果源与结果类型都是原生类型，那就在`Function`前加上`SrcToResult`，比如说`LongToIntFunction`。比如，` LongToIntFunction `（6个变形）。如果源是个原生类型，结果是个对象引用，那就在`Function`前加上`<Src>ToObj`，比如说`DoubleToObjFunction`。
 
-其中有3个基础函数式接口的2个参数版本是有意义的：`BiPredicate<T,U>` , ` BiFunction<T,U,R>` 和 `BiConsumer<T,U>`。还有返回3个相关的原生类型的`BiFunction `变形：` ToIntBiFunction<T,U>`，`ToLongBiFunction<T,U>` `和ToDoubleBiFunction<T,U>`。`Consumer`的2个参数变形，接受一个对象引用和一个原生类型：`ObjDoubleConsumer<T> `，`ObjIntConsumer<T> `和` ObjLongConsumer<T> `。总共有9种2个参数版本的基础接口。
+有3个基本的函数式接口还存在两参数版本，他们是`BiPredicate<T,U>`、`BiFunction<T,U,R>`与`BiConsumer<T,U>`。还有返回3个相关的原生类型的`BiFunction`变种，他们是`ToIntBiFunction<T,U>`、`ToLongBiFunction<T,U>`与`ToDoubleBiFunction<T,U>`。有两参数版本的`Consumer`，接收一个对象引用和一个原生类型：`ObjDoubleConsumer<T>`、`ObjIntConsumer<T>`与`ObjLongConsumer<T>`。总的来说，这些基本接口有9个两参数版本。
 
 最后，还有`BooleanSupplier`接口。它是返回布尔值的`Supplier`的变体。除了`Predicate`及其4种变体形式支持布尔类型返回值，这是标准函数式接口名中唯一明确提到布尔类型的地方。`BooleanSupplier`接口和前面段落中描述的42个接口构成了所有43个标准函数式接口。诚然，这是一件难以接受的事情，而且并不完全正交。另一方面，你需要的大部分函数式接口都已经为你写好，并且它们的名称非常规则，所以当你需要时，你应该不会遇到太多麻烦。
 
