@@ -25,9 +25,9 @@ default boolean removeIf(Predicate<? super E> filter) {
 
 这是我们所能想到的`removeIf`方法最好的通用实现，不过遗憾的是，它在某些真实的Collection实现中却会失败。比如说，考虑`org.apache.commons.collections4.collection.SynchronizedCollection`。该类来自于**Apache Commons**库，它类似于`java.util`包下静态工厂`Collections.synchronizedCollection`所返回的集合。Apache版本的集合额外又增加了使用客户端所提供的对象来代替集合进行加锁的能力。换句话说，它是个包装类（条款18），在委托给被包装的集合前，所有方法都会对锁对象进行同步。
 
-``Apache SynchronizedCollection`类依旧处于维护之中，不过在本书编写之际，它还没有重写`removeIf`方法。如果将该类用在Java 8中，那么它就会继承`removeIf`的默认实现，而默认实现并不会（实际上也不能）遵守该类的基本承诺：对每个方法调用自动进行同步。默认实现对于同步一无所知，也无法访问到包含着锁对象的字段。如果客户端在调用`SynchronizedCollection`实例的`removeIf`方法时，另外一个线程同时在对其进行并发修改，那就会导致`ConcurrentModificationException`或是其他意外的行为。
+`Apache SynchronizedCollection`类依旧处于维护之中，不过在本书编写之际，它还没有重写`removeIf`方法。如果将该类用在Java 8中，那么它就会继承`removeIf`的默认实现，而默认实现并不会（实际上也不能）遵守该类的基本承诺：对每个方法调用自动进行同步。默认实现对于同步一无所知，也无法访问到包含着锁对象的字段。如果客户端在调用`SynchronizedCollection`实例的`removeIf`方法时，另外一个线程同时在对其进行并发修改，那就会导致`ConcurrentModificationException`或是其他意外的行为。
 
-为了阻止这种事情在类似的Java平台库实现中发生，比如`Collections.synchronizedCollection`返回的包私有类，JDK维护者们不得不重写默认的`removeIf`方法实现和其他类似的方法，以便在调用默认实现之前执行必要的同步。并不属于Java平台的既有集合实现就没有这样的机会进行类似的改变以便与接口变更保持一致，而一些集合则必须要这样做才行。
+为了阻止这种事情在类似的Java平台库实现中发生，比如`Collections.synchronizedCollection`返回的包私有类，JDK维护者们不得不重写默认的`removeIf`方法实现和其他类似的方法，以便在调用默认实现之前执行必要的同步。然而那些早就存在的第三方库的集合实现，就没有这样的机会进行类似的改变以便与接口变更保持一致，但其中一些集合又必须与接口变更保持一致。
 
 **当存在默认方法时，接口的既有实现可能在编译时没有错误或是仅仅存在警告，但却会在运行时失败**。这个问题虽然不是很常见，但也不是孤立的事件。我们已经知道，在Java8中，添加到集合接口中的一些方法就受到了影响，同时也知道有一些既有的实现也受到了影响。
 
