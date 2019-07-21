@@ -49,4 +49,6 @@
   - [优先选择方法引用而非lambdas](chapter-7/Item43.md)
   - [优先选择标准的函数式接⼝](chapter-7/Item44.md)
 
+- [方法](chapter-8/README.md)
+  - [谨慎设计方法签名](chapter-8/Item51.md)
 
