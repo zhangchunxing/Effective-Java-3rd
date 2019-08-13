@@ -22,3 +22,4 @@ if (cheeses != null && cheeses.contains(Cheese.STILTON))
 	System.out.println("Jolly good, just the thing.");
 ```
 
+几乎每次使用返回`null`来代替空集合或数组的方法时，这种啰嗦的写法都是无法避免的。这很容易出错，因为编写客户端的程序员可能会忘记对返回`null`的特殊情况进行处理。这样的错误可能会被忽略多年，因为这样的方法通常返回一个或多个对象。而且，返回`null`代替空容器，会使返回容器的方法实现复杂化。
