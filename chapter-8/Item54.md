@@ -42,3 +42,24 @@ public List<Cheese> getCheeses() {
 }
 ```
 
+数组的情况与集合的情况相同。不要返回`null`来代替长度是0的数组。通常，你应该简单地返回一个正确长度的数组，它可能是零。注意，我们将一个长度为零的数组传递到`toArray`方法中，以指示所需的返回类型，即`Cheese[]`。
+
+```java
+//The right way to return a possibly empty array
+public Cheese[] getCheeses() {
+	return cheesesInStock.toArray(new Cheese[0]);
+}
+```
+
+如果你认为分配零长度数组会损害性能，你可以重复返回相同的零长度数组，因为所有的零长度数组都是不可变的：
+
+```java
+// Optimization - avoids allocating empty arrays
+private static final Cheese[] EMPTY_CHEESE_ARRAY = new Cheese[0];
+public Cheese[] getCheeses() {
+	return cheesesInStock.toArray(EMPTY_CHEESE_ARRAY);
+}
+```
+
+
+
