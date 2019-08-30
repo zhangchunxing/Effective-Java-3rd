@@ -56,10 +56,18 @@ public Cheese[] getCheeses() {
 ```java
 // Optimization - avoids allocating empty arrays
 private static final Cheese[] EMPTY_CHEESE_ARRAY = new Cheese[0];
+
 public Cheese[] getCheeses() {
 	return cheesesInStock.toArray(EMPTY_CHEESE_ARRAY);
 }
 ```
 
+在优化版本中，我们将相同的空数组传递到每个`toArray`调用中，当`cheesesInStock`为空时，这个数组将从`getCheeses`返回。不要为了提高性能而预先分配传递给`toArray`的数组。研究表明，这样做会适得其反：
 
+```java
+// Don’t do this - preallocating the array harms performance!
+return cheesesInStock.toArray(new Cheese[cheesesInStock.size()]);
+```
+
+总之，永远不要用`null`来代替空数组或集合。它使你的`API`更难以使用，更容易出错，并且没有性能优势。
 
