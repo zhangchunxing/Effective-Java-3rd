@@ -33,7 +33,7 @@ public List<Cheese> getCheeses() {
 }
 ```
 
-假设你有证据表明分配空集合会损害性能，那么你可以通过重复返回相同的不可变空集合来避免分配，因为不可变对象可以自由共享（条款17）。已经有代码来做这件事，去使用` Collections.emptyList`方法。如果你要返回一个`set`，你可以使用`Collections.emptySet`；如果你要返回一个`map`，你可以使用`Collections.emptyMap`。但是请记住，这是一个优化，很少需要它。如果你认为你需要它，测量一下前后的表现，确保它确实有帮助：
+假设你有证据表明分配空集合会损害性能，那么你可以通过重复返回相同的不可变空集合来避免分配，因为不可变对象可以自由共享（条款17）。已经有代码来做这件事，去使用` Collections.emptyList`方法吧。如果你要返回一个`set`，你可以使用`Collections.emptySet`；如果你要返回一个`map`，你可以使用`Collections.emptyMap`。但是请记住，这是一个优化，很少需要它。如果你认为你需要它，测量一下前后的表现，确保它确实有帮助：
 
 ```java
 // Optimization - avoids allocating empty collections
@@ -70,4 +70,3 @@ return cheesesInStock.toArray(new Cheese[cheesesInStock.size()]);
 ```
 
 总之，永远不要用`null`来代替空数组或集合。它使你的`API`更难以使用，更容易出错，并且没有性能优势。
-
