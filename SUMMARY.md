@@ -51,4 +51,6 @@
 
 - [方法](chapter-8/README.md)
   - [谨慎设计方法签名](chapter-8/Item51.md)
+  - [谨慎使用可变参数](chapter-8/Item53.md)
+  - [返回空集合或是数组而非null](chapter-8/Item54.md)
 
