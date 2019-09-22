@@ -11,3 +11,70 @@
 **几乎每一个局部变量声明都应该包含初始化**。如果你还没有足够的信息去合理地初始化一个变量，那么你应该推迟声明直到你可以初始化它。对于这个规则，`try-catch`语句是个例外。如果一个变量通过一个表达式来初始化，该表达式的计算可能抛出一个受检异常，那么该变量必须在`try`块中去初始化（除非所包含的方法可以传播异常）。如果该值必须在`try`块之外使用，那么它必须在`try`块之前声明，即便此时它还不能“合理地初始化”。举个例子，请参见283页。
 
 循环提供了一个特殊的机会来最小化变量的范围。对于循环，无论是传统形式还是`for-each`形式，都允许你声明一个循环变量，并限制他们的作用域在需要他们的指定区域。这个区域由循环体和循环体里的代码组成。因此，如果循环变量的内容不会在循环体之外使用到，那么我们优先使用`for`循环，相对于`while`循环。
+
+例如，下面是遍历集合的首选习惯用法（条款58）:
+
+```java
+// Preferred idiom for iterating over a collection or array
+for (Element e : c) {
+... // Do Something with e
+}
+```
+
+如果你需要访问迭代器，可能是想调用它的`remove`方法，那么首选的习惯用法是使用传统的`for`循环来代替`for-each`循环：
+
+```java
+// Idiom for iterating when you need the iterator
+for (Iterator<Element> i = c.iterator(); i.hasNext(); ) {
+	Element e = i.next();
+	... // Do something with e and i
+}
+```
+
+为了搞明白为什么`for`循环比`while`循环好，请考虑下面的代码片段，其中包含两个`while`循环和一个`bug`：
+
+```java
+Iterator<Element> i = c.iterator();
+while (i.hasNext()) {
+	doSomething(i.next());
+}
+...
+Iterator<Element> i2 = c2.iterator();
+while (i.hasNext()) { // BUG!
+	doSomethingElse(i2.next());
+}
+```
+
+第二个循环出现了复制粘贴错误：它初始化了一个新的循环变量`i2`，但是使用的是旧的变量`i`，不幸的是，它还在作用域中。最后，代码编译没有出错，并且运行的时候也没有抛出异常，但是的确做了的一件错事。第二个循环会立马终止，而不会遍历`c2`，从而产生`c2`为空的错误印象。因为程序会无声地出错，所以很长一段时间内都无法检测到该错误。
+
+如果相似的复制粘贴错误与`for`循环（`for-each`或者传统的）一起出现，结果是代码不会编译通过。第一个循环中的元素（或迭代器）变量不在第二个循环中的作用域中。下面是它在传统`for`循环里使用的例子：
+
+```java
+for (Iterator<Element> i = c.iterator(); i.hasNext(); ) {
+	Element e = i.next();
+	... // Do something with e and i
+}
+...
+    
+// Compile-time error - cannot find symbol i
+for (Iterator<Element> i2 = c2.iterator(); i.hasNext(); ) {
+	Element e2 = i2.next();
+	... // Do something with e2 and i2
+}
+```
+
+而且，你使用`for`循环，能减少复制粘贴带来的错误的可能性。因为两个循环中没有动机使用不同的变量名。
+
+循环是完全独立的，所以重用元素(或迭代器)变量名没有害处。事实上，这样做通常很流行。`for`循环比`while`循环还有一个优点：它更短，这增强了可读性。
+
+下面是另一个循环的习惯用法，它最小化了局部变量的范围：
+
+```java
+for (int i = 0, n = expensiveComputation(); i < n; i++) {
+	... // Do something with i;
+}
+```
+
+关于这个用法需要注意的重要一点是，它有两个循环变量，`i`和`n`，它们都具有完全正确的作用域。第二个变量`n`用于存储第一个变量的限制，从而避免了每次迭代中冗余计算的代价。作为一个规则，如果循环测试涉及一个方法调用，并且保证在每次迭代中返回相同的结果，那么应该使用这个习惯用法。
+
+最小化局部变量范围的最后一种技术是保持方法小而集中。如果你在同一方法中组合了两个活动，那么其中一个活动相关的局部变量可能位于执行另一个活动的代码的范围内。为了防止这种情况发生，你可以将这个方法一分为二：一个活动一个方法。
