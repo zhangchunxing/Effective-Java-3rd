@@ -42,9 +42,24 @@ enum Rank { ACE, DEUCE, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT,
 ...
 static Collection<Suit> suits = Arrays.asList(Suit.values());
 static Collection<Rank> ranks = Arrays.asList(Rank.values());
+
 List<Card> deck = new ArrayList<>();
 for (Iterator<Suit> i = suits.iterator(); i.hasNext(); )
-for (Iterator<Rank> j = ranks.iterator(); j.hasNext(); )
-deck.add(new Card(i.next(), j.next()));
+	for (Iterator<Rank> j = ranks.iterator(); j.hasNext(); )
+		deck.add(new Card(i.next(), j.next()));
+```
+
+如果你没有发现`bug`不要难过。许多专业程序员都曾犯过这样或那样的错误。问题就是，对于外部集合`suits`，`next`方法在迭代器上调用了多次。它应该在外部循环中调用，这样每个`suit`，`next`方法只会调用一次。但是，它现在是在内部循环中调用，所以每个`cad`，都会被调用一次。当`suits`集合用完后，循环抛出`NoSuchElementException`。
+
+如果你真地不幸运，外部集合的大小是内部集合大小的倍数——可能因为他们是相同的集合——循环会正常地终止，但是它不会执行你想要的操作。举个例子，考虑一下打印一对骰子所有可能的掷骰结果的错误尝试:	
+
+```java
+// Same bug, different symptom!
+enum Face { ONE, TWO, THREE, FOUR, FIVE, SIX }
+...
+Collection<Face> faces = EnumSet.allOf(Face.class);
+for (Iterator<Face> i = faces.iterator(); i.hasNext(); )
+	for (Iterator<Face> j = faces.iterator(); j.hasNext(); )
+		System.out.println(i.next() + " " + j.next());
 ```
 
