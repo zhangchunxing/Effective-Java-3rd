@@ -63,3 +63,16 @@ for (Iterator<Face> i = faces.iterator(); i.hasNext(); )
 		System.out.println(i.next() + " " + j.next());
 ```
 
+程序不会抛出异常，但它只打印6个双数（从“`ONE ONE`”到“`Six Six`”），而不是预期的36个组合。
+
+要修复这些例子中的错误，你必须在外层循环的范围内添加一个变量来保存外层元素：
+
+```java
+// Fixed, but ugly - you can do better!
+for (Iterator<Suit> i = suits.iterator(); i.hasNext(); ) {
+	Suit suit = i.next();
+	for (Iterator<Rank> j = ranks.iterator(); j.hasNext(); )
+		deck.add(new Card(suit, j.next()));
+}
+```
+
