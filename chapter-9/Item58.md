@@ -76,3 +76,16 @@ for (Iterator<Suit> i = suits.iterator(); i.hasNext(); ) {
 }
 ```
 
+如果你使用嵌套的`for-each`循环，这个问题简单地就消失了。最后的代码如你所希望的那样简洁：
+
+```java
+// Preferred idiom for nested iteration on collections and arrays
+for (Suit suit : suits)
+	for (Rank rank : ranks)
+		deck.add(new Card(suit, rank));
+```
+
+不幸的是，有三种常见的情况你不能使用`for-each`：
+
+- 破坏性的过滤——如果你需要遍历一个集合并删除选定的元素，那么你需要使用一个显式的迭代器，以便你可以调用它的`remove`方法。通过使用`Collection`的`removeIf`方法（Java8添加的），通常你可以避免显式地遍历。
+
