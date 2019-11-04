@@ -32,5 +32,26 @@ public static void main(String[] args) {
 }
 ```
 
+如果你运行这个程序，你会发现你能买得起三块糖，而且你还剩下0.3999999999999999美元。这是错误的答案！解决这个问题的正确方法是使用`BigDecimal`、`int`或`long`来进行货币计算。
+
+这里是前一个程序的一个简单转换，使用`BigDecimal`类型代替`double`。注意，这里使用的是`BigDecimal`的字符串构造函数，而不是它的`double`构造函数。这是为了避免在计算中引入不准确的值[Bloch05, Puzzle 2]：
+
+```java
+public static void main(String[] args) {
+	final BigDecimal TEN_CENTS = new BigDecimal(".10");
+	int itemsBought = 0;
+	BigDecimal funds = new BigDecimal("1.00");
+	for (BigDecimal price = TEN_CENTS;
+         funds.compareTo(price) >= 0;
+         price = price.add(TEN_CENTS)) {
+        
+		funds = funds.subtract(price);
+		itemsBought++;
+	}
+	System.out.println(itemsBought + " items bought.");
+	System.out.println("Money left over: $" + funds);
+}
+```
+
 
 
