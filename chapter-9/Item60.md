@@ -56,3 +56,20 @@ public static void main(String[] args) {
 如果你运行修改后的程序，你会发现你可以买4块糖果，还剩下0美元。这才是正确答案。
 
 然而，使用`BigDecimal`有两个缺点：相比于使用原生算术类型，它要麻烦得多，而且要慢得多。如果你解决的是一个简单的问题，后一种缺点是无关紧要的，但前一种缺点可能会惹恼你。
+
+除了使用`BigDecimal`，还可以使用`int`或者`long`，这取决于涉及的数量，并自己跟踪小数点。在这个例子中，最明显的方法是用美分而不是美元来进行所有的计算。下面是一个采用这种方法的简单转换：
+
+```java
+public static void main(String[] args) {
+	int itemsBought = 0;
+	int funds = 100;
+	for (int price = 10; funds >= price; price += 10) {
+		funds -= price;
+		itemsBought++;
+	}
+    
+	System.out.println(itemsBought + " items bought.");
+	System.out.println("Cash left over: " + funds + " cents");
+}
+```
+
