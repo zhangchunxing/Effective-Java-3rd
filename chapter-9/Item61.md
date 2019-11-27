@@ -17,5 +17,44 @@ Comparator<Integer> naturalOrder = (i, j) -> (i < j) ? -1 : (i == j ? 0 : 1);
 
 那么问题是什么呢？`naturalOrder`中的第一个测试工作正常。对表达式`i < j`求值会使`i`和`j`引用的`Integer`实例自动拆箱；也就是说，它提取了它们的原生值。然后表达式求值就是检查第一个整数值是否小于第二个整数值。但假设它不是。然后下一个测试计算表达式`i==j`，它是对2个对象引用进行了一致性比较。如果`i`和`j`引用了相同整数值的不同`Integer`实例，那么这个比较会返回`false`，然后这个比较器会错误地返回1，表示第一个`Integer`的值大于第二个。**对包装类型使用`==`操作符几乎总是错误的**。
 
+在实践中，你需要一个比较器来描述类型的自然排序，你应该直接调用` Comparator.naturalOrder() `。如果你自己写一个比较器，那么你应该使用比较器的共造方法，或者对原生类型使用静态的比较方法（条款14）。也就是说，你可以通过添加两个局部变量来存储与包装类型`Integer`参数相对应的原生的`int`值，并对这些变量执行所有的比较，从而修复损坏的比较器中的问题。这可以避免错误地相等性比较：
 
+```java
+Comparator<Integer> naturalOrder = (iBoxed, jBoxed) -> {
+	int i = iBoxed, j = jBoxed; // Auto-unboxing
+	return i < j ? -1 : (i == j ? 0 : 1);
+};
+```
 
+接下来，考虑一下这个有趣的小程序：
+
+```java
+public class Unbelievable {
+	static Integer i;
+	public static void main(String[] args) {
+		if (i == 42)
+			System.out.println("Unbelievable");
+	}
+}
+```
+
+是的，它不会打印`Unbelievable`，但是它打印的结果还是很奇怪。它在计算表达式`i == 42`时抛出`NullPointerException`。问题就在于，`i`是`Integer`，而不是`int`的，而且像所有的非常量的对象引用字段一样，它的初始值是`null`。
+
+当程序计算表达式`i == 42`时，它是在比较`Integere`和`int`。在几乎所有情况下，**当你把原生类型和该原生类型的包装类型放在一个操作中混合使用时，该包装类型会自动拆箱**。如果一个空对象引用自动拆箱，那么你将得到一个`NullPointerException`。正如这个程序所展示的，他几乎可以在任何地方发生。修复这个问题非常简单，只需将`i`声明为`int`而不是`Integer`。
+
+最后，考虑条款6里的第24页中的程序：
+
+```java
+// Hideously slow program! Can you spot the object creation?
+public static void main(String[] args) {
+	Long sum = 0L;
+	for (long i = 0; i < Integer.MAX_VALUE; i++) {
+		sum += i;
+	}
+	System.out.println(sum);
+}
+```
+
+这个程序比它本来的速度慢得多，因为它意外地将一个局部变量`sum`声明为包装类型`Long`，而不是原生类型`long`。程序编译时没有错误或警告，该变量被反复地拆箱和装箱，导致明显的性能下降。
+
+在本条款中讨论三个程序中，问题都是一样的：程序员忽略了原生类型和包装类型之间的区别，并承受了后果。在前两个程序中，后果就是是彻底的失败；在第三个，是严重的性能问题。

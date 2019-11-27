@@ -54,3 +54,9 @@
   - [谨慎使用可变参数](chapter-8/Item53.md)
   - [返回空集合或是数组而非null](chapter-8/Item54.md)
 
+- [通用程序设计](chapter-9/README.md)
+  - [最小化局部变量的作用域](chapter-9/Item57.md)
+  - [优先选择for-each循环而非传统的for循环](chapter-9/Item58.md)
+  - [在需要精确答案的情况下请避免使用float与double](chapter-9/Item60.md)
+  - [优先选择原生类型而非包装类型](chapter-9/Item61.md)
+
