@@ -15,3 +15,16 @@ public String statement() {
 }
 ```
 
+如果条目的数量很大，则该方法执行得非常糟糕。 为了获得可接受的性能，使用`StringBuilder`代替`String`来存储正在构建的账单。
+
+```java
+public String statement() {
+	StringBuilder b = new StringBuilder(numItems() * LINE_WIDTH);
+    
+	for (int i = 0; i < numItems(); i++)
+		b.append(lineForItem(i));
+    
+	return b.toString();
+}
+```
+
