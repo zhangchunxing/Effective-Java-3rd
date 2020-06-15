@@ -12,3 +12,25 @@
 
 这条建议的问题是，并没说清楚你是处理可恢复的条件还是程序错误。比如，考虑资源耗尽的情况，这可能是由编程错误（比如分配了一个不合理的大数组）或资源真正短缺造成的。如果资源耗尽是由暂时的短缺或暂时增加的需求造成的，这种情况很可能是可恢复的。一个给定的资源耗尽实例是否允许恢复是由`API`设计人员判断的问题。如果你认为某种情况可能允许恢复，请使用受检异常；否则，使用运行时异常。如果不清楚是否可以恢复，你最好使用非受检异常，这在条款71中会说明理由。
 
+通过将抛出异常的方法分解为两个方法，还可以将受检异常转换为非受检异常，第一个方法返回一个布尔值，指示是否将抛出异常。这个`API`重构将调用序列转换为：
+
+```java
+// Invocation with checked exception
+try {
+	obj.action(args);
+} catch (TheCheckedException e) {
+	... // Handle exceptional condition
+}
+```
+
+变为：
+
+```java
+// Invocation with state-testing method and unchecked exception
+if (obj.actionPermitted(args)) {
+	obj.action(args);
+} else {
+	... // Handle exceptional condition
+}
+```
+
