@@ -64,7 +64,7 @@
   - [优先选择接口而非反射](chapter-9/Item65.md)
   - [审慎地使用本地方法](chapter-9/Item66.md)
 
- - [异常](chapter-10/README.md)
+- [异常](chapter-10/README.md)
   - [只在异常条件下使用异常](chapter-10/Item69.md)
   - [可恢复条件下使用受检异常，程序错误下使用运行时异常-each循环而非传统的for循环](chapter-10/Item70.md)
   - [避免受检异常的不必要使用](chapter-10/Item71.md)
