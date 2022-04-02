@@ -68,3 +68,6 @@
   - [只在异常条件下使用异常](chapter-10/Item69.md)
   - [可恢复条件下使用受检异常，程序错误下使用运行时异常](chapter-10/Item70.md)
   - [避免受检异常的不必要使用](chapter-10/Item71.md)
+  
+- [并发](chapter-11/README.md)
+  - [对共享可变数据的同步访问](chapter-11/Item78.md)
