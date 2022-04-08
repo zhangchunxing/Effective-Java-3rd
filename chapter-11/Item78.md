@@ -10,4 +10,24 @@
 你可能听说过，为了提高性能，在读写原子数据时应该避免同步。这个建议是危险的、错误的。虽然语言规范保证线程在读取字段时不会看到不一致的值，但它不能保证一个线程写入的值对另一个线程是可见的。**线程间的可靠通信和互斥都需要同步**。 
 这是因为语言规范里有一部分叫作**内存模型**的内容，它描述了一个线程所做的更改何时以及如何对其他线程可见的[JLS, 17.4;Goetz06, 16]。
 
+即使数据的读写是原子性的，对共享的可变数据的访问不做同步的后果也可能是严重的。考虑一个线程停止另一个线程的情况。`JDK`提供了`Thread.stop`方法，但是这个方法在很久以前就被弃用了，因为它本质上是不安全的，使用它会导致数据损坏。所以，不要去使用`Thread.stop`。
+从另一个线程去停止一个线程的建议方法是让第一个线程轮询一个`boolean`字段，该字段最初为`false`。但可以由第二个线程将其设置为`true`，以此来通知第一个线程，将自己停止。因为读取和写入`boolean`字段是原子的，所以一些程序员在访问这类字段时，没有做同步：
+
+```java
+// Broken! - How long would you expect this program to run?
+public class StopThread {
+    private static boolean stopRequested;
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread backgroundThread = new Thread(() -> {
+            int i = 0;
+            while (!stopRequested) i++;
+        });
+        backgroundThread.start();
+        TimeUnit.SECONDS.sleep(1);
+        stopRequested = true;
+    }
+}
+```
+
 
