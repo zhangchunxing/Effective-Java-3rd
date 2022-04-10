@@ -30,4 +30,49 @@ public class StopThread {
 }
 ```
 
+你预期这个程序大约运行一秒钟。因为主程序线程设置`stopRequested`为`true`，从会导致后台线程的循环终止。然而，在我的机器上，这个程序永远不会终止：后台线程会一直循环下去！
+
+问题就是没有做同步，所以无法保证后台线程什么时候可以看到由主线程发出的`stopRequested`值的变化。在没有同步的情况下，虚拟机把这段代码：
+
+```java
+while (!stopRequested)
+    i++;
+```
+
+转变成下面代码，也是完全可以接受的。
+
+```java
+if (!stopRequested)
+    while (true)
+        i++;
+```
+
+这种优化是有益的，这正是`OpenJDK Server VM`所做的。事实上，结果失败了：程序没有正常运行。解决这个问题的一种方法是对`stopRequested`字段进行同步访问。然后，这个程序会如预期那样，大约在一秒内终止：
+
+```java
+// Properly synchronized cooperative thread termination
+public class StopThread {
+    private static boolean stopRequested;
+    
+    private static synchronized void requestStop() {
+        stopRequested = true;
+    }
+    
+    private static synchronized boolean stopRequested() {
+        return stopRequested;
+    }
+    
+    public static void main(String[] args) throws InterruptedException {
+        Thread backgroundThread = new Thread(() -> {
+        int i = 0;
+        while (!stopRequested())
+            i++;
+        });
+        
+        backgroundThread.start();
+        TimeUnit.SECONDS.sleep(1);
+        requestStop();
+    }
+}
+```
 
