@@ -64,9 +64,9 @@ public class StopThread {
     
     public static void main(String[] args) throws InterruptedException {
         Thread backgroundThread = new Thread(() -> {
-        int i = 0;
-        while (!stopRequested())
-            i++;
+            int i = 0;
+            while (!stopRequested()) 
+                i++;
         });
         
         backgroundThread.start();
@@ -79,3 +79,24 @@ public class StopThread {
 注意，写方法（requestStop）和读方法（stopRequested）都是同步的。只同步写方法是不够的！**除非读和写操作都同步，否则不能保证同步起作用**。
 有时候，只同步写（或读）的程序可能在某些机器上可以正常运行，但这种表面现象是具有欺骗性的。
 
+即使不做同步，`StopThread`中的同步方法的动作也是原子的。换句话说，这些方法上的同步仅用于其通信效果，而不是用于互斥。
+虽然在循环的每次迭代上进行同步的成本很小，但有一个正确的替代方案，它不那么冗长，而且性能可能更好。如果`stopRequested`被声明为`volatile`，那么第二个版本的`StopThread`中的锁可以省略。
+虽然`volatile`修饰符起不到互斥的作用，但它保证任何读取该字段的线程都能看到最近一次写入的值。
+
+```java
+// Cooperative thread termination with a volatile field
+public class StopThread {
+    private static volatile boolean stopRequested;
+    public static void main(String[] args) throws InterruptedException {
+        Thread backgroundThread = new Thread(() -> {
+            int i = 0;
+            while (!stopRequested)
+                i++;
+        });
+    
+        backgroundThread.start();
+        TimeUnit.SECONDS.sleep(1);
+        stopRequested = true;
+    }
+}
+```
