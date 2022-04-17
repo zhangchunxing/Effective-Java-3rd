@@ -100,3 +100,21 @@ public class StopThread {
     }
 }
 ```
+
+你们在使用`volatile`的时候，一定要仔细小心。思考下面这个方法——用来生成序列号：
+
+```java
+// Broken - requires synchronization!
+private static volatile int nextSerialNumber = 0;
+
+public static int generateSerialNumber() {
+    return nextSerialNumber++;
+}
+```
+
+该方法的目的是保证每次调用都返回一个唯一的值（只要调用次数不超过2⌃32）。该方法的状态是由一个支持原子性访问的字段`nextSerialNumber`组成，该字段的所有可能值都是合法的。
+所以，不需要同步来保护它的不变性。但真实情况是，如果没有同步，该方法将无法正常工作。
+
+问题就在于递增操作符（++）并不是原子的。`nextSerialNumber`字段执行两个操作：首先读取值，然后写回一个新值，即旧值加1。
+如果第二个线程在第一个线程读取旧值和写回新值之间读取了该字段，那么第二个线程将看到与第一个线程相同的值，并返回相同的序列号。
+这是一种**安全故障**：程序计算出错误的结果。
