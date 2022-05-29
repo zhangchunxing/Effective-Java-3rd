@@ -99,13 +99,13 @@ System.out.println("Parent PID: " + ph.parent().map(h -> String.valueOf(h.pid())
 streamOfOptionals.filter(Optional::isPresent).map(Optional::get)
 ```
 
-在Java 9中，`Optional`配备了一个`stream()`方法。这个方法是一个适配器，如果`Optional`对象包含值，它将`Optional`转换为包含这个值的`Stream`。如果`Optional`是空的，那么得到一个空的`Stream`。结合`Stream`的`flatMap`方法（条款45），该方法为上面的代码片段提供了一个简洁的替换：
+在Java 9中，`Optional`还配有一个`stream()`方法。这个方法是一个适配器，如果`Optional`对象有值，它将`Optional`转换为包含这个值的`Stream`。如果`Optional`是空的，那么得到一个空的`Stream`。结合`Stream`的`flatMap`方法（条款45），可以简洁地取代上述代码片段，如下：
 
 ```java
 streamOfOptionals.flatMap(Optional::stream)
 ```
 
-并不是所有返回类型都能从`Optional`中受益。**容器类型不应该被包装在`Optional`对象中。**比如：集合（collection）、映射（map）、流（stream）、数组（array）以及`Optional`。与其返回空的`Optional<List<T>>`，不如简单地返回空的`List<T> `（Item 54）。返回空的容器，客户端代码就不需要处理`Optional`对象。`ProcesHandle`类确实有`arguments`方法，它返回`Optional<String[]>`，但应该将此方法视为错误的示范，而不要去模仿它。
+但是，并非所有的返回类型都受益于`optional`的处理方法。**容器类型不应该被包装在`Optional`对象中。**比如：集合（collection）、映射（map）、流（stream）、数组（array）以及`Optional`。不要返回空的`Optional<List<T＞＞`，而应该只返回一个空的`List<T＞`（Item 54）。直接返回空的容器，客户端代码就不需要处理`Optional`对象。`ProcesHandle`类确实有`arguments`方法，它返回`Optional<String[]>`，但应该将此方法视为错误的示范，而不要去模仿它。
 
 那什么时候你应该声明一个方法返回`Optional<T>`而不是`T`？作为一条规则，如果方法不能返回结果，并且如果没有返回结果，客户端不得不执行特殊处理，则应该声明该方法返回`Optional<T>`。也就是说，返回`Optional<T>`是有成本的。`Optional`是一个必须分配和初始化的对象，从`Optional`对象中读取值需要一个额外的间接方法。这使得`Optional`不适合在某些性能关键的场景下使用。一个特殊的方法是否属于此类，只能通过仔细的测量来确定才行（条款67）。
 
