@@ -1,12 +1,12 @@
-# 谨慎地返回Optional类型
+# 谨慎返回Optional类型
 
 在 Java 8之前，要编写一个在特定环境下无法返回任何值的方法时，有两种方法：要么抛出异常，要么返回`null`（假设返回类型是一个对象引用类型）。但这两种方法都不够完美。首先，异常应该用在异常条件下（条款69）。并且抛出异常的代价很高，因为在创建异常时会捕获整个堆栈。返回`null`没有这些缺点，但它也有自身的不足。如果方法返回`null`，客户端就必须包含特殊的代码来处理返回`nu11`的可能性，除非程序员能证明不可能返回`nul1`。如果客户端疏忽了，没有检查`null`返回值，并将`null`返回值保存在某个数据结构中，那么未来在与这个问题毫不相关的某处代码中，随时有可能发生`NullPointerException`异常。
 
-在Java 8中，还有第三种方法去编写不能返回值的方法。`Optional`类代表一个不可变的容器，它要么包含一个非空的`T`类型的引用，要么什么也不包含。`empty`表示不包含任何内容的`Optional` 。`present`表示一个非空的`Optional`。`Optional`本质上是一个不可变的容器，最多包含一个元素。`Optional<T>`没有实现`Collection<T>`接口，但原则上可以这么做。
+在Java 中，还有第三种方法可以编写不能返回值的方法。`Optional<T＞`类代表的是一个不可变的容器，它可以存放单个非`null`引用，或者什么内容都没有。不包含任何内容的`optional`称为空（empty），非空的`optional`中的值称作存在（present）。`optional`本质上是一个不可变的集合，最多只能存放一个元素。`Optioal<T＞`没有实现`Collection<T>`接口，但原则上是可以的。
 
-如果有一个方法，正常情况下会返回`T`类型对象，但在某些情况下可能无法返回值，那么可以将其返回值声明为`Optional<T>`。这样做可以让方法返回一个空结果（`empty`)，表示无法返回一个有效的结果。方法返回`Optional` 比抛出异常更灵活、更易使用，而且比返回`null`更不容易出错。
+理论上能返回`T`的方法，在某些特定的条件下也可能无法返回，可以改为声明返回`Optional<T>`。这样做可以让方法返回一个空结果（`empty`)，表示无法返回一个有效的结果。方法返回`Optional` 比抛异常更灵活、更易使用，而且相对于返回`null`的方法更不容易出错。
 
-在条款30中，我们给出了根据元素的自然顺序计算集合中的最大值的方法：
+在条款30中展示过下面这个方法，根据元素的自然顺序，计算集合中的最大值：
 
 ```java
 // Returns maximum value in collection - throws exception if empty
@@ -25,7 +25,7 @@ public static <E extends Comparable<E>> E max(Collection<E> c) {
 
 ```
 
-如果集合是空的，那么方法会抛出异常` IllegalArgumentException`。在条款30里，我们说了有一个更好的可替代方案，就是返回`Optional<T>`。修改后的代码：
+如果指定的集合为空，这个方法就会抛出`IllegalArgumentExceptio`。在条款30中说过，更好的替代方法是返回`Optional<E>`。下面就是返回修改之后的代码：
 
 ```java
 // Returns maximum value in collection as an Optional<E>
@@ -42,9 +42,9 @@ public static <E extends Comparable<E>> Optional<E> max(Collection<E> c) {
 }
 ```
 
-如你所见，直接返回了一个`Optional`对象。你要做的就是使用合适的静态工厂来创建`Optional`。在这个程序中，我们一共使用了两个`Optional`对象：利用`Optional.empty()`返回一个空的`Optional`对象，利用`Optional.of(value)`返回一个包含指定的非空值的`Optional`对象。将`null`传递给`Optional.of(value)`是一个编程错误。如果这样做，该方法会抛出`NullPointerException`。`Optional.ofNullable(value)`方法可以接收`null`。如果传递`null`，该方法会返回一个空的`Optional`对象。永远不要在返回`Optional`对象的方法中去返回一个`null`值：这样做，就破坏了使用这个工具类的目的了。
+如上所示，返回`optional`是很简单的事。只要用适当的静态工厂创建`optional`即可。在这个程序中，我们使用了两个`optional`：`Optional.empty()`返回一个空的`optional`，`Optional.of(value)`返回一个包含了指定非`null`值的`optional`。将`null`传入`Optional.of(value)`是一个编程错误。如果这样做，该方法会抛出`NullPointerException`。`Optional.ofNullable(value)`方法接受可能为`null`的值，当传入`null`值时就返回一个空的`optional`。**永远不要在返回`Optional`对象的方法中去返回一个`null`值**：因为它彻底违背了`optional`的本意。
 
-流（`Stream`）的很多终止操作都返回了`Optional`。如果我们使用流的方式来重写`max`方法，`Stream`的`max`操作会返回一个`Optional`给我们（尽管我们必须传入一个显示的比较器）：
+`Stream`的许多终止操作都返回`optional`如果重新用`stream` 编写`max` 方法，让`stream`的`max`操作替我们完成产生`optional`的工作（虽然还是需要传人一个显式的比较器）：
 
 ```java
 // Returns max val in collection as Optional<E> - uses stream
@@ -53,47 +53,47 @@ public static <E extends Comparable<E>> Optional<E> max(Collection<E> c) {
 }
 ```
 
-对于是返回`Optional`，还是返回`null`或者抛出异常，我们应该如何选择？某种意义上来说，`Optional`与受检异常非常相似。因为他们都强迫`API`的使用者面对这样一个事实：可能没有返回值。而抛出非受检异常或返回`null`会让用户忽略这种可能事件，这可能会带来可怕的后果。但是，抛出受检异常需要在客户端代码中引入额外的样板代码。
+那么，如何选择是返回`optional`，还是返回`null`，或是抛出异常呢？**`Optional`本质上与受检异常（条款71）相类似 **，因为它们强迫`API`的用户面对没有返回值的现实。抛出非受检异常，或者返回`null`，都允许用户忽略这种可能性，从而可能带来灾难性的后果。但是，抛出受检异常需要在客户端添加额外的样板代码。
 
-如果一个方法返回`Optional`，客户端可以选择在方法不能返回值时采取什么操作。你可以指定一个默认值：
+如果方法返回`optional`，客户端必须做出选择：如果该方法不能返回值时应该采取什么动作 你可以指定一个默认值：
 
 ```java
 // Using an optional to provide a chosen default value
 String lastWordInLexicon = max(words).orElse("No words...");
 ```
 
-你也可以抛任何恰当的异常。请注意，我们传递的是异常工厂，而不是真实的异常。这样就避免了创建异常的开销，除非它真的会被抛出：
+你也可以抛出任何恰当的异常。注意此处传入的是一个异常工厂，而不是真实的异常。这避免了创建异常的开销，除非它真正抛出异常：
 
 ```java
 // Using an optional to throw a chosen exception
 Toy myToy = max(toys).orElseThrow(TemperTantrumException::new);
 ```
 
-如果你能确定`Optional`里是有值的，那么直接从`Optional`中获取该值就好。而不用去判断`Optional`是否有值。但是如果你判断错误，你的代码会抛出`NoSuchElementException`异常。
+如果你能够证明`optional`为非空，就不必指定如果`optional`为空要采取什么动作，直接从`optional`获得值即可；但是如果你判断错误，你的代码会抛出`NoSuchElementException`异常。
 
 ```java
 // Using optional when you know there’s a return value
 Element lastNobleGas = max(Elements.NOBLE_GASES).get();
 ```
 
-有时候，你可能会遇到获取默认值的代价很高的情况。除非必要，否则你希望避免这种代价。对于这些情况，`Optional`提供了参数为`Supplier<T>`的方法，并仅在必要时调用它。这个方法被称为`orElseGet`，但也许它应该被称为`orElseCompute`，因为它与三个名称以`compute`开头的`Map`方法密切相关。还有几个`Optional`的方法用于处理更多特定的用例：`filter`、`map`、`flatMap`和`ifPresent`。在Java 9中，添加了另外两个方法：`or`和`ifPresentOrElse`。如果上面的基本方法不能很好的满足你的需求，请查看这些更高级的方法的文档，看看它们是否能胜任工作。
+有时候，获取默认值的开销很高。除非十分必要，否则还是希望能够避免这一开销的。对于这类情况，`Optional`提供了一个带有`Supplier<T>`的方法，只有在必要的时候才调用它。这个方法被称为`orElseGet`，但也许它应该被称为`orElseCompute`，因为它与三个名称以`compute`开头的`Map`方法密切相关。还有几个`Optional`的方法用来处理更加特殊用例的情况：`filter`、`map`、`flatMap`和`ifPresent`。Java 9中，又新增了两个方法：`or`和`ifPresentOrElse`。如果上面的基本方法不能很好地满足你的需求，可以查看文档寻找更高级的方法，看看它们是否能胜任工作。
 
-如果这些方法都不能满足你的需求，`Optional`提供了`isPresent()`方法，它可以被视为一个安全阀。如果`Optional`包含值，则返回`true`，如果为空则返回`false`。你可以使用这个方法对一个`Optional`结果执行任何你喜欢的处理，但要确保明智地使用它。`isPresent`的许多用途都可以用上面提到的一种方法来代替。最终的代码通常会更简洁、更清晰、更自然。
+万一这些方法都无法满足需求， `Optional`还提供了`isPresent()`方法，它可以被当作是一个安全阀。当`optional`中包含一个值时，它返回`true`；当`optional`空时，返回`false`。该方法可用于对`optional`结果执行任意的处理，但要确保正确使用。`isPresent`的许多用法都可以用上述任意一种方法取代。这样得到的代码一般会更加简短、清晰，也更符合习惯用法。
 
-例如，这个代码片段，它打印一个进程的父进程的进程ID，或者如果该进程没有父进程，则输出`N/ a`。代码片段使用了在Java 9中引入的`ProcessHandle`类：
+例如，以下代码片段用于打印出一个进程的父进程ID ，当该进程没有父进程时打印`N/A`。 这里使用了在 Java9中引人的`ProcessHandle`类：
 
 ```java
 Optional<ProcessHandle> parentProcess = ph.parent();
 System.out.println("Parent PID: " + (parentProcess.isPresent() ? String.valueOf(parentProcess.get().pid()) : "N/A"));
 ```
 
-上面的代码片段可以替换为下面的代码片段，它使用了`Optional`的`map`函数：
+上述代码片段可以用以下的代码代替，这里使用了`Optional`的`map`函数：
 
 ```java
 System.out.println("Parent PID: " + ph.parent().map(h -> String.valueOf(h.pid())).orElse("N/A"))
 ```
 
-当使用`Stream`进行编程时，经常会发现自己得到的是`Stream<Optional<T>>`，其实我们想要的是一个包含了所有非空`Optional`里的元素的`Stream<T>`。如果你使用的是Java 8，下面是如何转换的方法：
+当用`Stream`编程时，经常会遇到`Stream<Optional<T>>`，其实我们想要的是包含了非空`Optional`中所有元素的`Stream<T>`。如果你使用的是Java 8，可以像这样弥补差距：
 
 ```java
 streamOfOptionals.filter(Optional::isPresent).map(Optional::get)
