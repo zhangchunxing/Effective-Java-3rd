@@ -24,5 +24,4 @@ exec.shutdown();
 
 如果想让不止一个线程来处理来自这个队列的请求，只要调用一个不同的静态工厂，这个工厂创建了一种不同的`executor service`，称作线程池（`thread pool`）。你可以用固定或者可变数目的线程创建一个线程池。`java.util.concurrent.Executors`类包含了静态工厂，能为你提供所需的大多数`executor`。然而，如果你想来点特别的，可以直接使用`ThreadPoolExecutor`类。这个类允许你控制线程池操作的几乎每个方面。
 
-
-
+为特定的应用程序选择执行器服务（`executor service`）可能有些棘手。对于小型程序或负载较轻的服务器，使用`Executors.newCachedThreadPool`通常是一个不错的选择，因为它不需要配置，而且通常都能达到正确的效果。
